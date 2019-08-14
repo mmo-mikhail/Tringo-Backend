@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Tringo.WebApp.Controllers
 {
@@ -7,6 +8,13 @@ namespace Tringo.WebApp.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private readonly ILogger _logger;
+
+        public ValuesController(ILoggerFactory logger)
+        {
+            _logger = logger.CreateLogger(nameof(ValuesController));
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()

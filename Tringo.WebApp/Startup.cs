@@ -5,15 +5,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.AzureAppServices;
 using Tringo.WebApp.HealthChecks;
 
 namespace Tringo.WebApp
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly ILogger _logger;
+
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            _logger = logger;
         }
 
         public IConfiguration Configuration { get; }
@@ -31,8 +36,15 @@ namespace Tringo.WebApp
                     tags: new[] { "initial" });
 
             // Polly. Will be set up later
-            services.AddHttpClient(); 
+            services.AddHttpClient();
 
+            // Configure logging (text files) to Azure FileSystem
+            services.Configure<AzureFileLoggerOptions>(options =>
+            {
+                options.FileName = "azure-diagnostics-";
+                options.FileSizeLimit = 50 * 1024;
+                options.RetainedFileCountLimit = 5;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,6 +52,7 @@ namespace Tringo.WebApp
         {
             if (env.IsDevelopment())
             {
+                _logger.LogInformation("Starting Up In Development Environment");
                 app.UseDeveloperExceptionPage();
             }
             else
