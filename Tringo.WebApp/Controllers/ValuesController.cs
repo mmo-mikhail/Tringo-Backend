@@ -12,7 +12,7 @@ namespace Tringo.WebApp.Controllers
 
         public ValuesController(ILoggerFactory logger)
         {
-            _logger = logger.CreateLogger(nameof(ValuesController));
+            _logger = logger.CreateLogger<ValuesController>();
         }
 
         // GET api/values

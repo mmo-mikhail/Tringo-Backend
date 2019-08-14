@@ -8,6 +8,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.AzureAppServices;
 using Tringo.WebApp.HealthChecks;
+using Tringo.WebApp.Middlewares;
 
 namespace Tringo.WebApp
 {
@@ -50,6 +51,19 @@ namespace Tringo.WebApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            //The order is critical for security, performance, and functionality.
+            //The following Startup.Configure method adds middleware components for common app scenarios:
+            //1 Exception / error handling
+            //2 HTTP Strict Transport Security Protocol
+            //3 HTTPS redirection
+            //4 Static file server
+            //5 Cookie policy enforcement
+            //6 Authentication
+            //7 Session
+            //8 MVC
+
+            app.UseMiddleware<ErrorHttpMiddleware>();
+
             if (env.IsDevelopment())
             {
                 _logger.LogInformation("Starting Up In Development Environment");
