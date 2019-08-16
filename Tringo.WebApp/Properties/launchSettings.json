@@ -29,11 +29,13 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
+      "useSSL": false,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/health",
       "environmentVariables": {
-        "ASPNETCORE_URLS": "https://+:443;http://+:80",
+        "ASPNETCORE_URLS": "http://+:80",
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "httpPort": 5000
+      "httpPort": 6543
     }
   }
 }
