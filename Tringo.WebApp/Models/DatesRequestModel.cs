@@ -12,9 +12,15 @@ namespace Tringo.WebApp.Models
 
     public class UncertainDatesRequest
     {
-        public int MonthIdx { get; set; }
+        /// <summary>
+        /// Month. Default/Any is -1 (minus one). Jan - 1, Feb - 2 and so on
+        /// </summary>
+        public int MonthIdx { get; set; } = -1;
 
-        public TravellingDurationTypes Duration { get; set; }
+        /// <summary>
+        /// User asked to provide estimated duration of the travel
+        /// </summary>
+        public TravellingDurationTypes Duration { get; set; } = TravellingDurationTypes.Any;
     }
 
     [Flags]

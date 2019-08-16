@@ -28,7 +28,7 @@ namespace Tringo.WebApp.Controllers
         [Route("GetDestinationPrices")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FlightDestinationResponse>>> GetDestinationPrices(
-            FlightDestinationRequest inputData = null)
+            FlightDestinationRequest inputData)
         {
             await Task.Delay(1000); // TODO: remove this line
             var response = new List<FlightDestinationResponse>()
