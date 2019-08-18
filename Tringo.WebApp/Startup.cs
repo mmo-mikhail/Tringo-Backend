@@ -16,6 +16,8 @@ namespace Tringo.WebApp
     {
         private readonly ILogger _logger;
 
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
@@ -27,6 +29,16 @@ namespace Tringo.WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:3535");
+                                        //, "http://www.contoso.com");
+                });
+            });
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             //Health Checks
@@ -74,6 +86,8 @@ namespace Tringo.WebApp
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 //app.UseHsts();
             }
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             //app.UseHttpsRedirection();
             app.UseMvc();

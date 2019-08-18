@@ -35,24 +35,24 @@ namespace Tringo.WebApp.Controllers
             {
                 new FlightDestinationResponse
                 {
-                    Lat = 47.6062,
-                    Lng = -122.3321,
-                    CityName = "City Name X",
-                    Price = 180
+                    Lat = -31.9505,
+                    Lng = 115.8605,
+                    CityName = "Perth",
+                    Price = 123
                 },
                 new FlightDestinationResponse
                 {
-                    Lat = 48.6062,
-                    Lng = -122.9321,
-                    CityName = "City Name Y",
-                    Price = 150
+                    Lat = -12.4634,
+                    Lng = 130.8456,
+                    CityName = "Darwin",
+                    Price = 400
                 },
                 new FlightDestinationResponse
                 {
-                    Lat = 45.2062,
-                    Lng = -123.3321,
-                    CityName = "City Name Z",
-                    Price = 100
+                    Lat = -33.8688,
+                    Lng = 151.2093,
+                    CityName = "Sydney",
+                    Price = 99
                 }
             };
             if (inputData != null)
