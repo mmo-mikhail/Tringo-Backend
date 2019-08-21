@@ -22,8 +22,6 @@ namespace Tringo.WebApp
                 .Build();
 
             return WebHost.CreateDefaultBuilder(args)
-                .UseUrls("http://*:5000")
-                .UseConfiguration(config)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureLogging((hostingContext, logging) =>
                 {

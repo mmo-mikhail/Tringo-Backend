@@ -1,4 +1,5 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-stretch-slim AS base
+ENV ASPNETCORE_URLS=http://+:80
 WORKDIR /app
 EXPOSE 80
 
