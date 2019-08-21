@@ -1,4 +1,4 @@
-[![Build status](https://dev.azure.com/Tringo/Tringo/_apis/build/status/Tringo-API-Dev)](https://dev.azure.com/Tringo/Tringo/_build/latest?definitionId=6)
+[![Build status](https://dev.azure.com/Tringo/Tringo/_apis/build/status/Tringo-CI-backend)](https://dev.azure.com/Tringo/Tringo/_build/latest?definitionId=7)
 
 # Tringo-Backend
  Tringo - Back-End Application
