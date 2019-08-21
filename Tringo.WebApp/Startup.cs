@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.AzureAppServices;
+using Newtonsoft.Json;
 using Tringo.WebApp.HealthChecks;
 using Tringo.WebApp.Middlewares;
 
@@ -35,11 +36,15 @@ namespace Tringo.WebApp
                 builder =>
                 {
                     builder.WithOrigins("http://localhost:3535");
-                                        //, "http://www.contoso.com");
                 });
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             //Health Checks
             services.AddHealthChecks()
@@ -48,7 +53,7 @@ namespace Tringo.WebApp
                     failureStatus: HealthStatus.Degraded,
                     tags: new[] { "initial" });
 
-            // Polly. Will be set up later
+            // TODO Polly. Will be set up later
             services.AddHttpClient();
 
             // Configure logging (text files) to Azure FileSystem

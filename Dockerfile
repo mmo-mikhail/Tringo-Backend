@@ -7,6 +7,11 @@ WORKDIR /src
 COPY ["Tringo.WebApp/Tringo.WebApp.csproj", "Tringo.WebApp/"]
 RUN dotnet restore "Tringo.WebApp/Tringo.WebApp.csproj"
 COPY . .
+RUN dotnet restore
+
+ENV TestArtifacts=/app/FlightsSearchService.Tests/TestArtifacts
+RUN dotnet test "Tringo.WebApp.Tests/Tringo.WebApp.Tests.csproj"
+
 WORKDIR "/src/Tringo.WebApp"
 RUN dotnet build "Tringo.WebApp.csproj" -c Release -o /app
 

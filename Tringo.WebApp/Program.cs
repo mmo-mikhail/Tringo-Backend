@@ -10,12 +10,20 @@ namespace Tringo.WebApp
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).UseStartup<Startup>().Build().Run();
+            CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                //.UseKestrel()
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("hosting.json", optional: true)
+                .AddCommandLine(args)
+                .Build();
+
+            return WebHost.CreateDefaultBuilder(args)
+                .UseUrls("http://*:5000")
+                .UseConfiguration(config)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureLogging((hostingContext, logging) =>
                 {
@@ -30,6 +38,8 @@ namespace Tringo.WebApp
                     // Filter out massive amount of Microsoft
                     logging.AddFilter("Microsoft", LogLevel.Warning);
                     //logging.AddFilter("System", LogLevel.Warning);
-                });
+                })
+                .UseStartup<Startup>();
+        }
     }
 }
