@@ -1,5 +1,6 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-stretch-slim AS base
 ENV ASPNETCORE_URLS=http://+:80
+ENV TZ=Australia/Melbourne
 WORKDIR /app
 EXPOSE 80
 
@@ -22,4 +23,5 @@ RUN dotnet publish "Tringo.WebApp.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
+EXPOSE 80
 ENTRYPOINT ["dotnet", "Tringo.WebApp.dll"]
