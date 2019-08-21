@@ -22,5 +22,5 @@ docker build  -t "${PROJECTNAME}":$IMAGETAG .
 check_error_exit
 
 echo "*****************   spinning docker service"
-docker run -d --rm -p 30067:80 "${PROJECTNAME}":$IMAGETAG
+docker run -d --rm -p 5000:80 "${PROJECTNAME}":$IMAGETAG
 check_error_exit
