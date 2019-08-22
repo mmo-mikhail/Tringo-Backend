@@ -17,11 +17,13 @@ namespace Tringo.WebApp
     {
         private readonly ILogger _logger;
 
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        private readonly string[] _corsPolicyOrigins;
+        private const string DevCors = "DevCors";
 
         public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            _corsPolicyOrigins = configuration.GetSection("CorsPolicyOrigins:AllowedOrigins").Get<string[]>();
             _logger = logger;
         }
 
@@ -32,10 +34,10 @@ namespace Tringo.WebApp
         {
             services.AddCors(options =>
             {
-                options.AddPolicy(MyAllowSpecificOrigins,
+                options.AddPolicy(DevCors,
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:3535");
+                    builder.WithOrigins( _corsPolicyOrigins);
                 });
             });
 
@@ -92,7 +94,7 @@ namespace Tringo.WebApp
                 //app.UseHsts();
             }
 
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors(DevCors);
 
             //app.UseHttpsRedirection();
             app.UseMvc();
