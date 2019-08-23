@@ -1,4 +1,6 @@
-﻿
+
+using System;
+
 namespace Tringo.WebApp.Models
 {
 
@@ -8,7 +10,40 @@ namespace Tringo.WebApp.Models
         /// Latitude
         /// </summary>
         public double Lat { get; set; }
-
+        
+        /// <summary>
+        /// Airport Iata code
+        /// </summary>
+        public string Iata {get; set;}
+        /// <summary>
+        /// Airport Icao code
+        /// </summary>
+        public string Icao {get; set;}
+        /// <summary>
+        /// airport name
+        /// </summary>
+        public string AirportName {get; set;}
+        /// <summary>
+        /// City code
+        /// </summary>
+        public string Citycode {get; set;}
+        /// <summary>
+        /// Country code
+        /// </summary>
+        public string Countrycode {get; set;}
+        /// <summary>
+        /// UTC time
+        /// </summary>
+        public double Utc {get; set;}
+        /// <summary>
+        /// Popularity of the airport
+        /// </summary>
+        public int Popularity {get; set;}
+        /// <summary>
+        /// Active = 1 represents the airport is in use
+        /// </summary>
+        public int Active {get; set;}
+        
         /// <summary>
         /// Longitude
         /// </summary>
@@ -56,5 +91,38 @@ namespace Tringo.WebApp.Models
         /// City or Airport title
         /// </summary>
         public string CityName { get; set; }
+        /// <summary>
+        /// Airport Iata code 
+        /// </summary>
+        public string Iata {get; set;}
+        /// <summary>
+        /// Airport Icao code
+        /// </summary>
+        
+        public string Icao {get; set;}
+        /// <summary>
+        /// airport name
+        /// </summary>
+        public string AirportName {get; set;}
+        /// <summary>
+        /// City code
+        /// </summary>
+        public string Citycode {get; set;}
+        /// <summary>
+        /// Country code
+        /// </summary>
+        public string Countrycode {get; set;}
+        /// <summary>
+        /// UTC time
+        /// </summary>
+        public double Utc {get; set;}
+        /// <summary>
+        /// Popularity of the airport
+        /// </summary>
+        public int Popularity {get; set;}
+        /// <summary>
+        /// Active = 1 represents the airport is in use
+        /// </summary>
+        public int Active {get; set;}
     }
 }
