@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +10,8 @@ namespace Tringo.FlightsService
     public class MockFlightsService
     {
         private static IEnumerable<AirportDto> storedAirports;
-        private static IEnumerable<FlightDestinationDto> storedFlights;
+
+        private static object flightsLock= new object();
 
         public static IEnumerable<AirportDto> GetAirports()
         {
@@ -46,8 +48,8 @@ namespace Tringo.FlightsService
                         .Replace("Air Base", "")
                         .Trim(),
                     IataCode = iataCode,
-                    Lat = Double.Parse(lat),
-                    Lng = Double.Parse(lng)
+                    Lat = double.Parse(lat),
+                    Lng = double.Parse(lng)
                 });
             }
             storedAirports = results;
@@ -56,44 +58,59 @@ namespace Tringo.FlightsService
 
         public static IEnumerable<FlightDestinationDto> GetFlights()
         {
-            if (storedFlights != null)
-                return storedFlights;
+            // usually the generated flights.json already exists on server,
+            // but if not, it'll be re-generated
 
-            var airports = GetAirports().ToList();
-            var flightsList = new List<FlightDestinationDto>();
-            var random = new Random();
-            var percentRandom = new Random();
-            for (var i = 0; i < 40000; i++)
+            const string flightsFileName = "flights.json";
+            if (File.Exists(flightsFileName))
+                return JsonConvert.DeserializeObject<IEnumerable<FlightDestinationDto>>(
+                    File.ReadAllText(flightsFileName));
+
+            lock (flightsLock)
             {
-                // generate From airport:
-                // 50 % that it's Sydney and 30% for Melbourne. 20% for rest
+                if (File.Exists(flightsFileName))
+                    return JsonConvert.DeserializeObject<IEnumerable<FlightDestinationDto>>(
+                        File.ReadAllText(flightsFileName));
 
-                var percent = percentRandom.NextDouble();
-                var from = "SYD";
-                if (percent > 0.5 && percent < 0.8)
-                    from = "MEL";
-                else if (percent > 0.8)
-                    from = airports[random.Next(0, airports.Count - 1)].IataCode;
+                using (File.Create(flightsFileName)) { }
 
-                // generate To airport
-                var to = airports[random.Next(0, airports.Count - 1)].IataCode;
-                while (to == from)
-                    to = airports[random.Next(0, airports.Count - 1)].IataCode;
-
-                //generate unique date
-                if (!TryGetUniqueDate(flightsList, from, to, random, out DateTime date))
-                    continue;
-
-                flightsList.Add(new FlightDestinationDto
+                var airports = GetAirports().ToList();
+                var flightsList = new List<FlightDestinationDto>();
+                var random = new Random();
+                var percentRandom = new Random();
+                for (var i = 0; i < 40000; i++)
                 {
-                    From = from,
-                    To = to,
-                    Date = date,
-                    LowestPrice = random.Next(100, 1500)
-                });
+                    // generate From airport:
+                    // 50 % that it's Sydney and 30% for Melbourne. 20% for rest
+
+                    var percent = percentRandom.NextDouble();
+                    var from = "SYD";
+                    if (percent > 0.5 && percent < 0.8)
+                        from = "MEL";
+                    else if (percent > 0.8)
+                        from = airports[random.Next(0, airports.Count - 1)].IataCode;
+
+                    // generate To airport
+                    var to = airports[random.Next(0, airports.Count - 1)].IataCode;
+                    while (to == from)
+                        to = airports[random.Next(0, airports.Count - 1)].IataCode;
+
+                    //generate unique date
+                    if (!TryGetUniqueDate(flightsList, from, to, random, out DateTime date))
+                        continue;
+
+                    flightsList.Add(new FlightDestinationDto
+                    {
+                        From = from,
+                        To = to,
+                        Date = date,
+                        LowestPrice = random.Next(100, 1500)
+                    });
+                }
+                File.WriteAllText(flightsFileName,
+                    JsonConvert.SerializeObject(flightsList));
+                return flightsList;
             }
-            storedFlights = flightsList;
-            return storedFlights;
         }
 
         /// <summary>
