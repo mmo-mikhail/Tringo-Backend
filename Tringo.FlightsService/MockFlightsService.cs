@@ -9,6 +9,7 @@ namespace Tringo.FlightsService
     public class MockFlightsService
     {
         private static IEnumerable<AirportDto> storedAirports;
+        private static IEnumerable<FlightDestinationDto> storedFlights;
 
         public static IEnumerable<AirportDto> GetAirports()
         {
@@ -55,32 +56,70 @@ namespace Tringo.FlightsService
 
         public static IEnumerable<FlightDestinationDto> GetFlights()
         {
+            if (storedFlights != null)
+                return storedFlights;
+
             var airports = GetAirports().ToList();
             var flightsList = new List<FlightDestinationDto>();
-            for (var i = 0; i < 500; i++)
+            var random = new Random();
+            var percentRandom = new Random();
+            for (var i = 0; i < 40000; i++)
             {
-                var random = new Random();
+                // generate From airport:
+                // 50 % that it's Sydney and 30% for Melbourne. 20% for rest
 
-                foreach (var Airports in airports)
+                var percent = percentRandom.NextDouble();
+                var from = "SYD";
+                if (percent > 0.5 && percent < 0.8)
+                    from = "MEL";
+                else if (percent > 0.8)
+                    from = airports[random.Next(0, airports.Count - 1)].IataCode;
+
+                // generate To airport
+                var to = airports[random.Next(0, airports.Count - 1)].IataCode;
+                while (to == from)
+                    to = airports[random.Next(0, airports.Count - 1)].IataCode;
+
+                //generate unique date
+                if (!TryGetUniqueDate(flightsList, from, to, random, out DateTime date))
+                    continue;
+
+                flightsList.Add(new FlightDestinationDto
                 {
-                    // get random price and Date
-                    var price = random.Next(100, 1500);
-                    var datetime = new DateTime(2019, random.Next(10, 11), random.Next(1, 29));
-                    const string from = "SYD";
-                    var to = airports[random.Next(0, airports.Count - 1)].IataCode;
-                    if (to == from)
-                        to = airports[random.Next(0, airports.Count - 1)].IataCode;
-
-                    flightsList.Add(new FlightDestinationDto
-                    {
-                        From = from,
-                        To = to,
-                        Date = datetime,
-                        LowestPrice = price
-                    });
-                }
+                    From = from,
+                    To = to,
+                    Date = date,
+                    LowestPrice = random.Next(100, 1500)
+                });
             }
-            return flightsList;
+            storedFlights = flightsList;
+            return storedFlights;
+        }
+
+        /// <summary>
+        /// Tries to find the unusued date for particular flight. Returns false is not found
+        /// </summary>
+        private static bool TryGetUniqueDate(
+            IEnumerable<FlightDestinationDto> flightsList,
+            string from,
+            string to,
+            Random random,
+            out DateTime date)
+        {
+            var counter = 0;
+            var randomDate = new DateTime(2019, random.Next(10, 11), random.Next(1, 29));
+            while (flightsList.Any(f => f.From == from && f.To == to
+                && randomDate.Date == f.Date.Date))
+            {
+                if (counter++ > 30) // avoid infinite loop when all dates are blocked
+                {
+                    date = randomDate;
+                    return false;
+                }
+                randomDate = new DateTime(2019, random.Next(10, 11), random.Next(1, 29));
+            }
+            date = randomDate;
+            return true;
         }
     }
 }
