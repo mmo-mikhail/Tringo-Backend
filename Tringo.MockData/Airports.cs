@@ -2,7 +2,7 @@ namespace Tringo.MockData
 {
     public class Airports
     {
-        public Airports(string cityName, string iata, double lat, double lng)
+        public Airports(string cityName, string iata, string lat, string lng)
         {
             CityName = cityName;
             Iata = iata;
@@ -12,7 +12,7 @@ namespace Tringo.MockData
 
         public string CityName { get; set; }
         public string Iata { get; set; }
-        public double Lat { get; set; }
-        public double Lng { get; set; }
+        public string Lat { get; set; }
+        public string Lng { get; set; }
     }
 }

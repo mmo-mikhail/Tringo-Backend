@@ -9,30 +9,30 @@ namespace Tringo.MockData
        /// <summary>
        /// Method to return a IEnumerable Airports List
        /// </summary>
-       public IEnumerable<Airports> GetAirPortsList()
-        {
-            using (var reader = new StreamReader("path of Airprots.csv"))
+       public static IEnumerable<Airports> GetAirPortsList()
+       {
+            using (var reader = new StreamReader("copy the path of airports.csv file to here"))
             {
                 var airportslist = new List<Airports>();
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
                     var values = line.Split(',');
-                    airportslist.Add(new Airports(values[0], values[1], Convert.ToDouble(values[2]), Convert.ToDouble(values[3])));
+                    airportslist.Add(new Airports(values[0], values[1], values[2], values[3]));
                 }
                 return airportslist;
             }
-        }
+       }
 
 
 
        /// <summary>
        /// Method to return a IEnumerable Flights List
        /// </summary>
-        public IEnumerable<Flights> GetFlightsList()
+        public static IEnumerable<Flights> GetFlightsList()
         {
             var random = new Random();
-            var <Airports> AirPortsList = GetAirPortsList();
+            var AirPortsList = GetAirPortsList();
             var flightsList = new List<Flights>();
             for (var i = 0; i < 10; i++)
             {
@@ -46,6 +46,5 @@ namespace Tringo.MockData
             }
             return flightsList;
         }
-
     }
 }
