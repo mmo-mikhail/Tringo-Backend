@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Tringo.FlightsService;
 
 namespace Tringo.WebApp.HealthChecks
 {
@@ -14,9 +16,9 @@ namespace Tringo.WebApp.HealthChecks
         public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
             CancellationToken cancellationToken = default)
         {
-            // Execute health check logic here. This example sets a dummy
-            // variable to true.
-            var healthCheckResultHealthy = true;
+            var healthCheckResultHealthy =
+                MockFlightsService.GetAirports().Any()
+                && MockFlightsService.GetFlights().Any();
 
             if (healthCheckResultHealthy)
             {
