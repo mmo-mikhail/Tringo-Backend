@@ -7,13 +7,14 @@ using Tringo.FlightsService.DTO;
 
 namespace Tringo.FlightsService
 {
-    public class MockFlightsService
+    public class MockFlightsService : IFlightsService
     {
         private static IEnumerable<AirportDto> storedAirports;
 
         private static object flightsLock= new object();
 
-        public static IEnumerable<AirportDto> GetAirports()
+
+        public IEnumerable<AirportDto> GetAirports()
         {
             if (storedAirports != null)
                 return storedAirports;
@@ -56,7 +57,7 @@ namespace Tringo.FlightsService
             return storedAirports;
         }
 
-        public static IEnumerable<FlightDestinationDto> GetFlights()
+        public IEnumerable<FlightDestinationDto> GetFlights()
         {
             // usually the generated flights.json already exists on server,
             // but if not, it'll be re-generated
