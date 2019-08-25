@@ -1,4 +1,4 @@
-namespace MockData
+namespace Tringo.MockData
 {
     public class Airports
     {

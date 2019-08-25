@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace MockData
+namespace Tringo.MockData
 {
     public class MockData
     {
-        //Method to return a IEnumerable Airports List
-        IEnumerable<Airports> GetAirPortsList()
+       /// <summary>
+       /// Method to return a IEnumerable Airports List
+       /// </summary>
+       public IEnumerable<Airports> GetAirPortsList()
         {
             using (var reader = new StreamReader("path of Airprots.csv"))
             {
@@ -18,19 +20,19 @@ namespace MockData
                     var values = line.Split(',');
                     airportslist.Add(new Airports(values[0], values[1], Convert.ToDouble(values[2]), Convert.ToDouble(values[3])));
                 }
-
-                IEnumerable<Airports> AirportsList = airportslist;
-                return AirportsList;
+                return airportslist;
             }
         }
 
 
 
-        //Method to return a IEnumerable Flights List
-        IEnumerable<Flights> GetFlightsList()
+       /// <summary>
+       /// Method to return a IEnumerable Flights List
+       /// </summary>
+        public IEnumerable<Flights> GetFlightsList()
         {
-            Random random = new Random();
-            IEnumerable<Airports> AirPortsList = GetAirPortsList();
+            var random = new Random();
+            var <Airports> AirPortsList = GetAirPortsList();
             var flightsList = new List<Flights>();
             for (var i = 0; i < 10; i++)
             {
@@ -42,9 +44,7 @@ namespace MockData
                     flightsList.Add(new Flights("SYD", Airports.Iata, price, datetime));
                 }
             }
-
-            IEnumerable<Flights> FlightsList = flightsList;
-            return FlightsList;
+            return flightsList;
         }
 
     }

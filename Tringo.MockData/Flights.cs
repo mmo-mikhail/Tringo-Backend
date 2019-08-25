@@ -1,6 +1,6 @@
 using System;
 
-namespace MockData
+namespace Tringo.MockData
 {
     public class Flights
     {
