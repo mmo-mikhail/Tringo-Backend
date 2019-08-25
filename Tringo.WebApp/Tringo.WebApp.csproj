@@ -9,11 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="airports.csv" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="MockFiles\airports.csv">
+    <Content Include="MockFiles\airports.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
