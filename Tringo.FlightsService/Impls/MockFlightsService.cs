@@ -5,13 +5,15 @@ using System.IO;
 using System.Linq;
 using Tringo.FlightsService.DTO;
 
-namespace Tringo.FlightsService
+namespace Tringo.FlightsService.Impls
 {
     public class MockFlightsService : IFlightsService
     {
         private static IEnumerable<AirportDto> storedAirports;
+        private static Dictionary<string, IEnumerable<ReturnFlightDestinationDto>> storedFlights
+			= new Dictionary<string, IEnumerable<ReturnFlightDestinationDto>>();
 
-        private static object flightsLock= new object();
+		private static object flightsLock= new object();
 
 
         public IEnumerable<AirportDto> GetAirports()
@@ -57,87 +59,98 @@ namespace Tringo.FlightsService
             return storedAirports;
         }
 
-        public IEnumerable<FlightDestinationDto> GetFlights()
+        public IEnumerable<ReturnFlightDestinationDto> GetFlights(string airportFromCode)
         {
             // usually the generated flights.json already exists on server,
             // but if not, it'll be re-generated
 
-            const string flightsFileName = "flights.json";
+            var flightsFileName = $"MockFiles/flights-{airportFromCode}.json";
+
+			if (storedFlights.ContainsKey(flightsFileName))
+				return storedFlights[flightsFileName];
+
             if (File.Exists(flightsFileName))
-                return JsonConvert.DeserializeObject<IEnumerable<FlightDestinationDto>>(
-                    File.ReadAllText(flightsFileName));
+			{
+				var data = JsonConvert.DeserializeObject<IEnumerable<ReturnFlightDestinationDto>>(
+					File.ReadAllText(flightsFileName));
+				if (!storedFlights.ContainsKey(flightsFileName))
+					storedFlights.Add(flightsFileName, data);
+				return data;
+			}
+                
 
             lock (flightsLock)
             {
-                if (File.Exists(flightsFileName))
-                    return JsonConvert.DeserializeObject<IEnumerable<FlightDestinationDto>>(
-                        File.ReadAllText(flightsFileName));
-
                 using (File.Create(flightsFileName)) { }
 
-                var airports = GetAirports().ToList();
-                var flightsList = new List<FlightDestinationDto>();
+				var airports = GetAirports().ToList();
+                var flightsList = new List<ReturnFlightDestinationDto>();
                 var random = new Random();
                 var percentRandom = new Random();
-                for (var i = 0; i < 40000; i++)
+				// be careful, 40k is really big number, it takes a lot to generate all the data
+				for (var i = 0; i < 40000; i++)
                 {
-                    // generate From airport:
-                    // 50 % that it's Sydney and 30% for Melbourne. 20% for rest
-
-                    var percent = percentRandom.NextDouble();
-                    var from = "SYD";
-                    if (percent > 0.5 && percent < 0.8)
-                        from = "MEL";
-                    else if (percent > 0.8)
-                        from = airports[random.Next(0, airports.Count - 1)].IataCode;
-
-                    // generate To airport
-                    var to = airports[random.Next(0, airports.Count - 1)].IataCode;
-                    while (to == from)
+					// generate To airport
+					var to = airports[random.Next(0, airports.Count - 1)].IataCode;
+                    while (to == airportFromCode)
                         to = airports[random.Next(0, airports.Count - 1)].IataCode;
 
                     //generate unique date
-                    if (!TryGetUniqueDate(flightsList, from, to, random, out DateTime date))
+                    if (!TryGetUniqueDate(flightsList, airportFromCode, to, random,
+						out DateTime departureDate, out DateTime returnDate))
                         continue;
 
-                    flightsList.Add(new FlightDestinationDto
-                    {
-                        From = from,
+                    flightsList.Add(new ReturnFlightDestinationDto
+					{
+                        From = airportFromCode,
                         To = to,
-                        Date = date,
+						DateDeparture = departureDate.Date,
+						DateBack = returnDate.Date,
                         LowestPrice = random.Next(100, 1500)
                     });
                 }
-                File.WriteAllText(flightsFileName,
+				storedFlights.Add(flightsFileName, flightsList);
+
+				File.WriteAllText(flightsFileName,
                     JsonConvert.SerializeObject(flightsList));
+
                 return flightsList;
             }
         }
 
         /// <summary>
-        /// Tries to find the unusued date for particular flight. Returns false is not found
+        /// Tries to find the unusued date for particular flight.
+		/// Returns false is not found (all dates reserved)
         /// </summary>
         private static bool TryGetUniqueDate(
-            IEnumerable<FlightDestinationDto> flightsList,
+            IEnumerable<ReturnFlightDestinationDto> flightsList,
             string from,
             string to,
             Random random,
-            out DateTime date)
+            out DateTime departureDate,
+			out DateTime returnDate)
         {
             var counter = 0;
-            var randomDate = new DateTime(2019, random.Next(10, 11), random.Next(1, 29));
-            while (flightsList.Any(f => f.From == from && f.To == to
-                && randomDate.Date == f.Date.Date))
+            var randomDateDep = new DateTime(2019, random.Next(10, 11), random.Next(1, 29));
+            var randomDateReturn = new DateTime(2019, random.Next(10, 11), random.Next(1, 29));
+            while (randomDateDep.Date > randomDateReturn.Date
+				&& flightsList.Any(f => f.From == from && f.To == to
+                && randomDateDep.Date == f.DateDeparture.Date 
+				&& randomDateReturn.Date == f.DateBack.Date))
             {
-                if (counter++ > 30) // avoid infinite loop when all dates are blocked
+                if (randomDateDep.Date < randomDateReturn.Date && counter++ > 100)
                 {
-                    date = randomDate;
-                    return false;
+					// avoid infinite loop when all dates are blocked
+					departureDate = randomDateDep;
+                    returnDate = randomDateReturn;
+					return false;
                 }
-                randomDate = new DateTime(2019, random.Next(10, 11), random.Next(1, 29));
+				randomDateDep = new DateTime(2019, random.Next(9, 11), random.Next(1, 29));
+				randomDateReturn = new DateTime(2019, random.Next(9, 11), random.Next(1, 29));
             }
-            date = randomDate;
-            return true;
+			departureDate = randomDateDep;
+			returnDate = randomDateReturn;
+			return true;
         }
     }
 }

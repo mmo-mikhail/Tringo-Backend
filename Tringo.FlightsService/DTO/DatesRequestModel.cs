@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Tringo.WebApp.Models
+namespace Tringo.FlightsService.DTO
 {
     public class DatesRequest
     {
-        public DateTime DateFrom { get; set; }
-        public DateTime DateUntil { get; set; }
+        public DateTime? DateFrom { get; set; }
+        public DateTime? DateUntil { get; set; }
 
         public UncertainDatesRequest UncertainDates { get; set; }
     }
