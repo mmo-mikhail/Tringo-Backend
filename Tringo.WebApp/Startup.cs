@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.AzureAppServices;
 using Newtonsoft.Json;
 using Tringo.FlightsService;
+using Tringo.FlightsService.Impls;
 using Tringo.WebApp.HealthChecks;
 using Tringo.WebApp.Middlewares;
 
@@ -50,6 +51,7 @@ namespace Tringo.WebApp
                 }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSingleton<IFlightsService>(new MockFlightsService());
+            services.AddSingleton<IDestinationsFilter>(new DestinationsFilter());
 
             //Health Checks
             services.AddHealthChecks()

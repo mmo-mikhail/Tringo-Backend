@@ -20,7 +20,8 @@ namespace Tringo.WebApp.HealthChecks
         {
             var healthCheckResultHealthy =
                 _flightsService.GetAirports().Any()
-                && _flightsService.GetFlights().Any();
+                && _flightsService.GetFlights("MEL").Any()
+				&& _flightsService.GetFlights("SYD").Any();
 
             if (healthCheckResultHealthy)
             {

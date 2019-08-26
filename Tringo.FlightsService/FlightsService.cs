@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Tringo.FlightsService.DTO;
 
 namespace Tringo.FlightsService
@@ -9,6 +7,6 @@ namespace Tringo.FlightsService
     {
         IEnumerable<AirportDto> GetAirports();
 
-        IEnumerable<FlightDestinationDto> GetFlights();
+        IEnumerable<ReturnFlightDestinationDto> GetFlights(string airportFromCode);
     }
 }
