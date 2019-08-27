@@ -133,7 +133,7 @@ namespace Tringo.FlightsService.Impls
             var counter = 0;
             var randomDateDep = new DateTime(2019, random.Next(10, 11), random.Next(1, 29));
             var randomDateReturn = new DateTime(2019, random.Next(10, 11), random.Next(1, 29));
-            while (randomDateDep.Date > randomDateReturn.Date
+            while (randomDateDep.Date >= randomDateReturn.Date
 				&& flightsList.Any(f => f.From == from && f.To == to
                 && randomDateDep.Date == f.DateDeparture.Date 
 				&& randomDateReturn.Date == f.DateBack.Date))
