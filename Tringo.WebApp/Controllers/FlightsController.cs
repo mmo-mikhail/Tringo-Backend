@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -38,22 +39,25 @@ namespace Tringo.WebApp.Controllers
 					Lat = -31.9505,
 					Lng = 115.8605,
 					CityName = "Perth",
-					Price = 123
+					Price = 123,
+                    PersonalPriorityIdx = 1,
 				},
 				new FlightDestinationResponse
 				{
 					Lat = -12.4634,
 					Lng = 130.8456,
 					CityName = "Darwin",
-					Price = 400
-				},
+					Price = 400,
+                    PersonalPriorityIdx = 1
+                },
 				new FlightDestinationResponse
 				{
 					Lat = -33.8688,
 					Lng = 151.2093,
 					CityName = "Sydney",
-					Price = 99
-				}
+					Price = 99,
+                    PersonalPriorityIdx = 1
+                }
 			};
 			return new OkObjectResult(response);
 		}
@@ -94,10 +98,11 @@ namespace Tringo.WebApp.Controllers
 					Price = f.LowestPrice * inputData.NumberOfPeople,
 					CityName = destinationAiport.RelatedCityName,
 					Lat = destinationAiport.Lat,
-					Lng = destinationAiport.Lng
-				};
+					Lng = destinationAiport.Lng,
+                    PersonalPriorityIdx = 1
+                };
 			});
-			return new ObjectResult(repsData);
+			return new OkObjectResult(repsData);
 		}
     }
 }
