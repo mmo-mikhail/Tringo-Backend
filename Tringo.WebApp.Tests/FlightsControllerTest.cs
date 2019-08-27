@@ -15,7 +15,8 @@ namespace Tringo.WebApp.Tests
 {
     public class FlightsControllerTest
     {
-        [Theory, AutoMoqData]
+        [Theory]
+        [AutoMoqData]
         public void GetDestinationPrices_BadRequest(
             FlightDestinationRequest request,
             FlightsController flightsController
@@ -33,7 +34,8 @@ namespace Tringo.WebApp.Tests
             result.Result.Should().BeOfType<BadRequestResult>();
         }
 
-        [Theory, AutoMoqData]
+        [Theory]
+        [AutoMoqData]
         public void GetDestinationPrices_Success(
             [Frozen]Mock<IFlightsService> flightsService,
             FlightsController flightsController
