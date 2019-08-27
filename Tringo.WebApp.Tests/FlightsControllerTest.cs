@@ -15,7 +15,8 @@ namespace Tringo.WebApp.Tests
 {
     public class FlightsControllerTest
     {
-        [Theory, AutoMoqData]
+        [Theory]
+        [AutoMoqData]
         public void GetDestinationPrices_BadRequest(
             FlightDestinationRequest request,
             FlightsController flightsController
@@ -33,20 +34,24 @@ namespace Tringo.WebApp.Tests
             result.Result.Should().BeOfType<BadRequestResult>();
         }
 
-        [Theory, AutoMoqData]
+        [Theory]
+        [AutoMoqData]
         public void GetDestinationPrices_Success(
             [Frozen]Mock<IFlightsService> flightsService,
             FlightsController flightsController
             )
         {
-            return;
-            //TODO: finish this test
 
             // Arrange
             //var request = new Fixture().Create<FlightDestinationRequest>();
-            var request = new FlightDestinationRequest()
+            var request = new FlightDestinationRequest
             {
-                // ...
+                DepartureAirportId = "MEL",
+                Dates = new DatesRequest
+                {
+                    DateFrom = DateTime.Parse("2019-09-15"),
+                    DateUntil = DateTime.Parse("2019-10-15")
+                }
             };
 
             var airports = new List<AirportDto>()
@@ -71,8 +76,7 @@ namespace Tringo.WebApp.Tests
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeOfType<OkObjectResult>();
-            // TODO ...
+            result.Result.Should().BeOfType<OkObjectResult>();
         }
     }
 }

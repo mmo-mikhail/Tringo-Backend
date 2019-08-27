@@ -39,7 +39,10 @@ namespace Tringo.WebApp
                 options.AddPolicy(DevCors,
                 builder =>
                 {
-                    builder.WithOrigins( _corsPolicyOrigins);
+                    builder
+                        .WithOrigins( _corsPolicyOrigins)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
                 });
             });
 
