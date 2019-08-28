@@ -9,22 +9,18 @@ using Moq;
 using FluentAssertions;
 using Tringo.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
-using AutoFixture;
 
 namespace Tringo.WebApp.Tests
 {
     public class FlightsControllerTest
     {
         [Theory]
-        [AutoMoqData]
+        [InlineAutoMoqData(null)]
         public void GetDestinationPrices_BadRequest(
             FlightDestinationRequest request,
             FlightsController flightsController
             )
         {
-            // Arrange
-            request.Dates = null;
-
             // Act
             var result = flightsController.GetDestinationPrices(request).Result;
 
@@ -51,6 +47,13 @@ namespace Tringo.WebApp.Tests
                 {
                     DateFrom = DateTime.Parse("2019-09-15"),
                     DateUntil = DateTime.Parse("2019-10-15")
+                },
+                Budget = new Budget() { Min = 0, Max = 1000 },
+                SearchArea = new SearchArea()
+                {
+                    Lat = 12.23,
+                    Lng = 556.43,
+                    Radius = 1400
                 }
             };
 
