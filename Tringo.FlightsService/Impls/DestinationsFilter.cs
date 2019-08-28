@@ -34,8 +34,13 @@ namespace Tringo.FlightsService.Impls
 			{
 				if (dates.UncertainDates.MonthIdx != -1)
 				{
-					flights = flights.Where(f => 
-						f.DateDeparture.Month == dates.UncertainDates.MonthIdx
+                    var year = dates.UncertainDates.MonthIdx < DateTime.Now.Month
+                        ? DateTime.Now.Year + 1
+                        : DateTime.Now.Year;
+
+                    flights = flights.Where(f => 
+                        f.DateDeparture.Year == year && f.DateBack.Year == year
+                        && f.DateDeparture.Month == dates.UncertainDates.MonthIdx
 						&& f.DateBack.Month == dates.UncertainDates.MonthIdx);
 				}
 				//filter out by duration.
