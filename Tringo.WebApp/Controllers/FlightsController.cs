@@ -69,25 +69,32 @@ namespace Tringo.WebApp.Controllers
             // just for testing and must be deleted soon
             await Task.Delay(100); // TODO: remove this line
 
-            if (inputData?.Dates == null)
+            if (inputData?.Dates == null
+                || inputData.SearchArea == null
+                || inputData.Budget == null)
                 return new BadRequestResult();
 
             // Find related flights
             var allFlights = _flightsService.GetFlights(inputData.DepartureAirportId);
             var allAirports = _flightsService.GetAirports();
-            var relatedAirports = _destinationsFilter.FilterAirports(allAirports, inputData.SearchArea);
+            var relatedAirports = _destinationsFilter
+                .FilterAirports(allAirports, inputData.SearchArea)
+                .ToList();
             var airportsIatas = relatedAirports.Select(a => a.IataCode);
 
             // Base filtering:
             // - by Budget
             // - by flights to airports within requested area
-            var fitleredFlights = allFlights.Where(f =>
-                inputData.Budget.Min < f.LowestPrice && f.LowestPrice < inputData.Budget.Max
-                                                     && airportsIatas.Contains(f.To)
-            );
+            var fitleredFlights = allFlights
+                .Where(f =>
+                    inputData.Budget.Min < f.LowestPrice && f.LowestPrice < inputData.Budget.Max
+                    && airportsIatas.Contains(f.To))
+                .ToList();
 
             // Filter by Dates
-            fitleredFlights = _destinationsFilter.FilterFlightsByDates(fitleredFlights, inputData.Dates);
+            fitleredFlights = _destinationsFilter
+                .FilterFlightsByDates(fitleredFlights, inputData.Dates)
+                .ToList();
 
             // Map filtered flights to response
             var repsData = fitleredFlights.Select(f =>
@@ -101,7 +108,7 @@ namespace Tringo.WebApp.Controllers
                     Lng = destinationAiport.Lng,
                     PersonalPriorityIdx = 1
                 };
-            });
+            }).ToList();
             return new OkObjectResult(repsData);
         }
     }

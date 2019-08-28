@@ -15,6 +15,6 @@
 		/// <summary>
 		/// Radius in Kilometers
 		/// </summary>
-		public int Radius { get; set; }
+		public double Radius { get; set; }
 	}
 }
