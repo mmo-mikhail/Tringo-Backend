@@ -69,9 +69,7 @@ namespace Tringo.WebApp.Controllers
             // just for testing and must be deleted soon
             await Task.Delay(100); // TODO: remove this line
 
-            if (inputData?.Dates == null
-                || inputData.SearchArea == null
-                || inputData.Budget == null)
+            if (inputData == null)
                 return new BadRequestResult();
 
             // Find related flights
