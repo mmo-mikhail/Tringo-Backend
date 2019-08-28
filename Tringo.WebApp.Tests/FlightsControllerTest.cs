@@ -51,9 +51,8 @@ namespace Tringo.WebApp.Tests
                 Budget = new Budget() { Min = 0, Max = 1000 },
                 SearchArea = new SearchArea()
                 {
-                    Lat = 12.23,
-                    Lng = 556.43,
-                    Radius = 1400
+                    Nw = new Coordinates(43,-32),
+                    Se = new Coordinates(32,36)
                 }
             };
 
