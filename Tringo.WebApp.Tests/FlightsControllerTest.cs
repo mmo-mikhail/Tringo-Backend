@@ -15,12 +15,29 @@ namespace Tringo.WebApp.Tests
     public class FlightsControllerTest
     {
         [Theory]
+        [InlineAutoMoqData(null)]
+        public void GetDestinationPrices_BadRequest(
+            FlightDestinationRequest request,
+            FlightsController flightsController
+            )
+        {
+            // Act
+            var result = flightsController.GetDestinationPrices(request).Result;
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Value.Should().BeNull();
+            result.Result.Should().BeOfType<BadRequestResult>();
+        }
+
+        [Theory]
         [AutoMoqData]
         public void GetDestinationPrices_Success(
             [Frozen]Mock<IFlightsService> flightsService,
             FlightsController flightsController
             )
         {
+
             // Arrange
             //var request = new Fixture().Create<FlightDestinationRequest>();
             var request = new FlightDestinationRequest
