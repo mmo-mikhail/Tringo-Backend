@@ -7,7 +7,11 @@ namespace Tringo.WebApp.Models
 
     public class FlightDestinationRequest
     {
-		public SearchArea SearchArea { get; set; }
+        /// <summary>
+        /// Area within which flights will be fitlered
+        /// </summary>
+        [Required(ErrorMessage = "Missing Search Area")]
+        public SearchArea SearchArea { get; set; }
 
 		/// <summary>
 		/// Number of people requested. 1 by default
@@ -28,7 +32,7 @@ namespace Tringo.WebApp.Models
         [Required(ErrorMessage = "Missing Dates")]
         public DatesRequest Dates { get; set; }
 
-		public Budget Budget { get; set; }
+        public Budget Budget { get; set; }
 	}
 
 	public class Budget
