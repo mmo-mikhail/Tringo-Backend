@@ -41,8 +41,8 @@ namespace Tringo.FlightsService.Impls
                     continue;
 
                 var coords = values[3].Split(',');
-                var lat = coords[0].Replace("\"", "").Trim();
-                var lng = coords[1].Replace("\"", "").Trim();
+                var lng = coords[0].Replace("\"", "").Trim();
+                var lat = coords[1].Replace("\"", "").Trim();
                 results.Add(new AirportDto
                 {
                     AirportName = values[1],
