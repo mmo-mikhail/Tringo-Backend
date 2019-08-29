@@ -1,6 +1,7 @@
 using AutoFixture.Xunit2;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using Tringo.FlightsService;
 using Tringo.FlightsService.DTO;
 using Tringo.WebApp.Controllers;
@@ -28,6 +29,7 @@ namespace Tringo.WebApp.Tests
             result.Should().NotBeNull();
             result.Value.Should().BeNull();
             result.Result.Should().BeOfType<BadRequestResult>();
+            ( (StatusCodeResult) result.Result).StatusCode.Should().Be(400);
         }
 
         [Theory]
