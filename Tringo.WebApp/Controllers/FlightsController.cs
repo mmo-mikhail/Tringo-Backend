@@ -107,7 +107,7 @@ namespace Tringo.WebApp.Controllers
                     PersonalPriorityIdx = 1
                 };
             }).ToList();
-            return new OkObjectResult(repsData);
+            return repsData.Count > 0 ? Ok(repsData) : NoContent() as ActionResult;
         }
     }
 }
