@@ -25,42 +25,7 @@ namespace Tringo.WebApp.Controllers
             _flightsService = flightsService;
             _destinationsFilter = destinationsFilter;
         }
-
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<FlightDestinationResponse>>> GetDestinationPrice()
-        {
-            // just for testing and will be deleted soon
-            await Task.Delay(1000); // TODO: remove this line
-            var response = new List<FlightDestinationResponse>()
-            {
-                new FlightDestinationResponse
-                {
-                    Lat = -31.9505,
-                    Lng = 115.8605,
-                    CityName = "Perth",
-                    Price = 123,
-                    PersonalPriorityIdx = 1,
-                },
-                new FlightDestinationResponse
-                {
-                    Lat = -12.4634,
-                    Lng = 130.8456,
-                    CityName = "Darwin",
-                    Price = 400,
-                    PersonalPriorityIdx = 1
-                },
-                new FlightDestinationResponse
-                {
-                    Lat = -33.8688,
-                    Lng = 151.2093,
-                    CityName = "Sydney",
-                    Price = 99,
-                    PersonalPriorityIdx = 1
-                }
-            };
-            return new OkObjectResult(response);
-        }
+        
 
         [HttpPost]
         public async Task<ActionResult<IEnumerable<FlightDestinationResponse>>> GetDestinationPrices(
@@ -107,7 +72,7 @@ namespace Tringo.WebApp.Controllers
                     PersonalPriorityIdx = 1
                 };
             }).ToList();
-            return new OkObjectResult(repsData);
+            return repsData.Count > 0 ? Ok(repsData) : NoContent() as ActionResult;
         }
     }
 }
