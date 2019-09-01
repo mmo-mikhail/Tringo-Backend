@@ -4,9 +4,22 @@ namespace Tringo.FlightsService.DTO
 {
     public class DatesRequest
     {
-        public DateTime? DateFrom { get; set; }
-        public DateTime? DateUntil { get; set; }
+	    /// <summary>
+	    /// Departure date.
+	    /// WARN: it is null when unknown dates present! 
+	    /// </summary>
+		public DateTime? DateFrom { get; set; }
 
+		/// <summary>
+		/// Return date.
+		/// WARN: it is null when unknown dates present! 
+		/// </summary>
+		public DateTime? DateUntil { get; set; }
+
+		/// <summary>
+		/// Represent unknown dates
+		/// WARN: it is null when specific dates present! 
+		/// </summary>
         public UncertainDatesRequest UncertainDates { get; set; }
     }
 
