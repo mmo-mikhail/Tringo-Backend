@@ -48,28 +48,42 @@ namespace Tringo.WebApp.Controllers
             // Base filtering:
             // - by Budget
             // - by flights to airports within requested area
-            var fitleredFlights = allFlights
+            var filteredFlights = allFlights
                 .Where(f =>
                     inputData.Budget.Min < f.LowestPrice && f.LowestPrice < inputData.Budget.Max
                     && airportsIatas.Contains(f.To))
                 .ToList();
 
             // Filter by Dates
-            fitleredFlights = _destinationsFilter
-                .FilterFlightsByDates(fitleredFlights, inputData.Dates)
+            filteredFlights = _destinationsFilter
+                .FilterFlightsByDates(filteredFlights, inputData.Dates)
                 .ToList();
 
-            // Map filtered flights to response
-            var repsData = fitleredFlights.Select(f =>
+			if (inputData.Dates.UncertainDates != null)
+			{
+				// It may happen that when unknown dates -> many same flights (with same from-to airports) filtered,
+				// but with different prices
+				// so need to select only MIN price for all same destinations
+				filteredFlights = _destinationsFilter.FilterLowestPriceOnly(filteredFlights).ToList();
+			}
+
+			// Map filtered flights to response
+			var repsData = filteredFlights.Select(f =>
             {
-                var destinationAiport = relatedAirports.First(a => a.IataCode == f.To);
+                var destinationAirport = relatedAirports.First(a => a.IataCode == f.To);
                 return new FlightDestinationResponse
                 {
                     Price = f.LowestPrice * inputData.NumberOfPeople,
-                    CityName = destinationAiport.RelatedCityName,
-                    Lat = destinationAiport.Lat,
-                    Lng = destinationAiport.Lng,
-                    PersonalPriorityIdx = 1
+                    DestAirportCode = destinationAirport.IataCode,
+					CityName = destinationAirport.RelatedCityName,
+                    Lat = destinationAirport.Lat,
+                    Lng = destinationAirport.Lng,
+					PersonalPriorityIdx = 1,
+					FlightDates = new FlightDates
+					{
+						DepartureDate = f.DateDeparture.Date,
+						ReturnDate = f.DateBack.Date
+					}
                 };
             }).ToList();
             return repsData.Count > 0 ? Ok(repsData) : NoContent() as ActionResult;

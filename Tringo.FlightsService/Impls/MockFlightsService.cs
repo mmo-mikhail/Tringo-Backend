@@ -33,8 +33,9 @@ namespace Tringo.FlightsService.Impls
                     continue;
 
                 var type = values[0];
-                if (type != "medium_airport" && type != "large_airport")
-                    continue;
+                if (type != "large_airport")
+					//if (type != "medium_airport" && type != "large_airport") // Exclude Medium airports for MVP
+					continue;
 
                 var iataCode = values[2];
                 if (string.IsNullOrWhiteSpace(iataCode))
@@ -119,7 +120,7 @@ namespace Tringo.FlightsService.Impls
         }
 
         /// <summary>
-        /// Tries to find the unusued date for particular flight.
+        /// Tries to find the unused date for particular flight.
 		/// Returns false is not found (all dates reserved)
         /// </summary>
         private static bool TryGetUniqueDate(
@@ -131,11 +132,11 @@ namespace Tringo.FlightsService.Impls
 			out DateTime returnDate)
         {
             var counter = 0;
-            var randomDateDep = new DateTime(2019, random.Next(10, 11), random.Next(1, 29));
-            var randomDateReturn = new DateTime(2019, random.Next(10, 11), random.Next(1, 29));
+            var randomDateDep = new DateTime(2019, random.Next(10, 11), random.Next(1, 30));
+            var randomDateReturn = new DateTime(2019, random.Next(10, 11), random.Next(1, 30));
             while (randomDateDep.Date >= randomDateReturn.Date
-				&& flightsList.Any(f => f.From == from && f.To == to
-                && randomDateDep.Date == f.DateDeparture.Date 
+				|| flightsList.Any(f => f.From == from && f.To == to
+                && randomDateDep.Date == f.DateDeparture.Date
 				&& randomDateReturn.Date == f.DateBack.Date))
             {
                 if (randomDateDep.Date < randomDateReturn.Date && counter++ > 100)
@@ -145,8 +146,8 @@ namespace Tringo.FlightsService.Impls
                     returnDate = randomDateReturn;
 					return false;
                 }
-				randomDateDep = new DateTime(2019, random.Next(9, 11), random.Next(1, 29));
-				randomDateReturn = new DateTime(2019, random.Next(9, 11), random.Next(1, 29));
+				randomDateDep = new DateTime(2019, random.Next(9, 11), random.Next(1, 30));
+				randomDateReturn = new DateTime(2019, random.Next(9, 11), random.Next(1, 30));
             }
 			departureDate = randomDateDep;
 			returnDate = randomDateReturn;

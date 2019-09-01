@@ -73,7 +73,24 @@ namespace Tringo.FlightsService.Impls
 			}
 		}
 
-        #region helpers
+		/// <summary>
+		/// Filters out only flights with min price if same flight (same from-to airports) present
+		/// </summary>
+		public IEnumerable<ReturnFlightDestinationDto> FilterLowestPriceOnly(
+			IEnumerable<ReturnFlightDestinationDto> sourceAirports)
+		{
+			var cheapestFlights = new List<ReturnFlightDestinationDto>();
+			foreach (var group in sourceAirports.GroupBy(flight =>new { flight.From, flight.To }))
+			{
+				var cheapestFlight = sourceAirports
+					.Where(f => f.From == group.Key.From && f.To == group.Key.To)
+					.OrderBy(f => f.LowestPrice).ElementAt(0);
+				cheapestFlights.Add(cheapestFlight);
+			}
+			return cheapestFlights;
+		}
+
+		#region helpers
 
         // Just to show the idea with 180 lattitude;
         // First 4 parameters could be crammed into RectagleF
