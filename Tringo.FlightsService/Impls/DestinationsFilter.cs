@@ -66,7 +66,7 @@ namespace Tringo.FlightsService.Impls
 							&& f.DateDeparture.DayOfWeek == DayOfWeek.Saturday);
 						break;
 					default:
-						break;
+						throw new ArgumentException("Unknown dates specified, but duration is not set'");
 				}
 
 				return flights;
