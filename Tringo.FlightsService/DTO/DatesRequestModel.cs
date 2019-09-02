@@ -33,15 +33,19 @@ namespace Tringo.FlightsService.DTO
         /// <summary>
         /// User asked to provide estimated duration of the travel
         /// </summary>
-        public TravellingDurationTypes Duration { get; set; } = TravellingDurationTypes.Any;
+        public TravellingDurationTypes Duration { get; set; } = TravellingDurationTypes.None;
     }
 
     [Flags]
     public enum TravellingDurationTypes
     {
-        Any = 1,
-        Weekend = 2,
-        Week = 4,
-        TwoWeeks = 8
+		/// <summary>
+		/// None says that nothing is selected, which is considered as invalid state
+		/// </summary>
+	    None = 0,
+
+		Weekend = 1,
+        Week = 2,
+        TwoWeeks = 4
     }
 }
