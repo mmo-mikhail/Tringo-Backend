@@ -45,15 +45,17 @@ namespace Tringo.WebApp.Controllers
                 .ToList();
             var airportsIatas = relatedAirports.Select(a => a.IataCode);
 
-            // Base filtering:
-            // - by Budget
-            // - by flights to airports within requested area
-            var filteredFlights = allFlights
-                .Where(f =>
-                    inputData.Budget.Min < f.LowestPrice && f.LowestPrice < inputData.Budget.Max
-                    && airportsIatas.Contains(f.To))
-                .ToList();
+			// Filtering:
+			// Filter by flights to airports within requested area
+			var filteredFlights = allFlights.Where(f => airportsIatas.Contains(f.To)).ToList();
 
+			// Filter by Budget
+			if (inputData.Budget != null)
+			{
+				filteredFlights = filteredFlights.Where(f =>
+					inputData.Budget.Min < f.LowestPrice && f.LowestPrice < inputData.Budget.Max).ToList();
+			}
+			
             // Filter by Dates
             filteredFlights = _destinationsFilter
                 .FilterFlightsByDates(filteredFlights, inputData.Dates)
