@@ -147,5 +147,539 @@ namespace Tringo.WebApp.Tests
             result.Result.Should().BeOfType<OkObjectResult>();
             ((OkObjectResult) result.Result).StatusCode.Should().Be(200);
         }
+        
+        [Theory]
+        [AutoMoqData]
+        public void GetDestinationPrices_PriceWithinBudget_True(
+            [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
+            FlightsController flightsController
+        )
+        {
+            // Arrange
+            var request = new FlightDestinationRequest
+            {
+                DepartureAirportId = "MEL",
+                Dates = new DatesRequest
+                {
+                    DateFrom = DateTime.Parse("2019-09-15"),
+                    DateUntil = DateTime.Parse("2019-10-15")
+                },
+                Budget = new Budget() {Min = 0, Max = 1000},
+                SearchArea = new SearchArea()
+                {
+                    Nw = new Coordinates(43, -32),
+                    Se = new Coordinates(32, 36)
+                }
+            };
+
+            var flights = new List<ReturnFlightDestinationDto>()
+            {
+                new ReturnFlightDestinationDto
+                {
+                    To = "MEL",
+                    LowestPrice = 50,
+                    DateDeparture = DateTime.Now,
+                    DateBack = DateTime.Now
+                }
+            };
+
+            var airports = new List<AirportDto>()
+            {
+                new AirportDto
+                {
+                    Lat = -5.1912441010878609,
+                    Lng = 104.71056084999998,
+                    IataCode = "MEL",
+                    AirportName = "Tullamarine",
+                    RelatedCityName = "Melbourne"
+                }
+            };
+
+            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
+            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
+                .Returns(airports);
+            destinationsFilterMock
+                .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
+                .Returns(flights);
+
+            // Act
+            var result = flightsController.GetDestinationPrices(request).Result;
+            var okResult = ((OkObjectResult) result.Result);
+            var responseList = okResult.Value as List<FlightDestinationResponse>; 
+            
+            // Assert
+            responseList.Should().NotBeNull();
+            responseList.Should().OnlyContain(x => x.Price <= request.Budget.Max);
+
+        }
+        
+        [Theory]
+        [AutoMoqData]
+        public void GetDestinationPrices_PriceWithinBudget_False(
+            [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
+            FlightsController flightsController
+        )
+        {
+            // Arrange
+            var request = new FlightDestinationRequest
+            {
+                DepartureAirportId = "MEL",
+                Dates = new DatesRequest
+                {
+                    DateFrom = DateTime.Parse("2019-09-15"),
+                    DateUntil = DateTime.Parse("2019-10-15")
+                },
+                Budget = new Budget() {Min = 0, Max = 1000},
+                SearchArea = new SearchArea()
+                {
+                    Nw = new Coordinates(43, -32),
+                    Se = new Coordinates(32, 36)
+                }
+            };
+
+            var flights = new List<ReturnFlightDestinationDto>()
+            {
+                new ReturnFlightDestinationDto
+                {
+                    To = "MEL",
+                    LowestPrice = 1200,
+                    DateDeparture = DateTime.Now,
+                    DateBack = DateTime.Now
+                }
+            };
+
+            var airports = new List<AirportDto>()
+            {
+                new AirportDto
+                {
+                    Lat = -5.1912441010878609,
+                    Lng = 104.71056084999998,
+                    IataCode = "MEL",
+                    AirportName = "Tullamarine",
+                    RelatedCityName = "Melbourne"
+                }
+            };
+
+            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
+            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
+                .Returns(airports);
+            destinationsFilterMock
+                .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
+                .Returns(flights);
+
+            // Act
+            var result = flightsController.GetDestinationPrices(request).Result;
+            var okResult = ((OkObjectResult) result.Result);
+            var responseList = okResult.Value as List<FlightDestinationResponse>; 
+            
+            // Assert
+            responseList.Should().NotBeNull();
+            responseList.Should().NotContain(x => x.Price <= request.Budget.Max);
+        }
+        
+        [Theory]
+        [AutoMoqData]
+        public void GetDestinationPrices_DateDepartureMatchDateFrom_True(
+            [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
+            FlightsController flightsController
+        )
+        {
+            // Arrange
+            var request = new FlightDestinationRequest
+            {
+                DepartureAirportId = "MEL",
+                Dates = new DatesRequest
+                {
+                    DateFrom = DateTime.Parse("2019-09-15"),
+                    DateUntil = DateTime.Parse("2019-10-15")
+                },
+                Budget = new Budget() {Min = 0, Max = 1000},
+                SearchArea = new SearchArea()
+                {
+                    Nw = new Coordinates(43, -32),
+                    Se = new Coordinates(32, 36)
+                }
+            };
+
+            var flights = new List<ReturnFlightDestinationDto>()
+            {
+                new ReturnFlightDestinationDto
+                {
+                    To = "MEL",
+                    LowestPrice = 50,
+                    DateDeparture = DateTime.Parse("2019-09-15"),
+                    DateBack = DateTime.Parse("2019-10-15")
+                }
+            };
+
+            var airports = new List<AirportDto>()
+            {
+                new AirportDto
+                {
+                    Lat = -5.1912441010878609,
+                    Lng = 104.71056084999998,
+                    IataCode = "MEL",
+                    AirportName = "Tullamarine",
+                    RelatedCityName = "Melbourne"
+                }
+            };
+
+            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
+            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
+                .Returns(airports);
+            destinationsFilterMock
+                .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
+                .Returns(flights);
+
+            // Act
+            var result = flightsController.GetDestinationPrices(request).Result;
+            var okResult = ((OkObjectResult) result.Result);
+            var responseList = okResult.Value as List<FlightDestinationResponse>; 
+            
+            // Assert
+            responseList.Should().NotBeNull();
+            responseList.Should().OnlyContain(i => i.FlightDates.DepartureDate == request.Dates.DateFrom);
+
+        }
+        
+        [Theory]
+        [AutoMoqData]
+        public void GetDestinationPrices_DateDepartureMatchDateFrom_False(
+            [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
+            FlightsController flightsController
+        )
+        {
+            // Arrange
+            var request = new FlightDestinationRequest
+            {
+                DepartureAirportId = "MEL",
+                Dates = new DatesRequest
+                {
+                    DateFrom = DateTime.Parse("2019-09-15"),
+                    DateUntil = DateTime.Parse("2019-10-15")
+                },
+                Budget = new Budget() {Min = 0, Max = 1000},
+                SearchArea = new SearchArea()
+                {
+                    Nw = new Coordinates(43, -32),
+                    Se = new Coordinates(32, 36)
+                }
+            };
+
+            var flights = new List<ReturnFlightDestinationDto>()
+            {
+                new ReturnFlightDestinationDto
+                {
+                    To = "MEL",
+                    LowestPrice = 50,
+                    DateDeparture = DateTime.Now,
+                    DateBack = DateTime.Now
+                }
+            };
+
+            var airports = new List<AirportDto>()
+            {
+                new AirportDto
+                {
+                    Lat = -5.1912441010878609,
+                    Lng = 104.71056084999998,
+                    IataCode = "MEL",
+                    AirportName = "Tullamarine",
+                    RelatedCityName = "Melbourne"
+                }
+            };
+
+            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
+            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
+                .Returns(airports);
+            destinationsFilterMock
+                .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
+                .Returns(flights);
+
+            // Act
+            var result = flightsController.GetDestinationPrices(request).Result;
+            var okResult = ((OkObjectResult) result.Result);
+            var responseList = okResult.Value as List<FlightDestinationResponse>; 
+            
+            // Assert
+            responseList.Should().NotBeNull();
+            responseList.Should().NotContain(i => i.FlightDates.DepartureDate == request.Dates.DateFrom);
+
+        }
+        [Theory]
+        [AutoMoqData]
+        public void GetDestinationPrices_ReturnDateMatchDateUntil_True(
+            [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
+            FlightsController flightsController
+        )
+        {
+            // Arrange
+            var request = new FlightDestinationRequest
+            {
+                DepartureAirportId = "MEL",
+                Dates = new DatesRequest
+                {
+                    DateFrom = DateTime.Parse("2019-09-15"),
+                    DateUntil = DateTime.Parse("2019-10-15")
+                },
+                Budget = new Budget() {Min = 0, Max = 1000},
+                SearchArea = new SearchArea()
+                {
+                    Nw = new Coordinates(43, -32),
+                    Se = new Coordinates(32, 36)
+                }
+            };
+
+            var flights = new List<ReturnFlightDestinationDto>()
+            {
+                new ReturnFlightDestinationDto
+                {
+                    To = "MEL",
+                    LowestPrice = 50,
+                    DateDeparture = DateTime.Parse("2019-09-15"),
+                    DateBack = DateTime.Parse("2019-10-15")
+                }
+            };
+
+            var airports = new List<AirportDto>()
+            {
+                new AirportDto
+                {
+                    Lat = -5.1912441010878609,
+                    Lng = 104.71056084999998,
+                    IataCode = "MEL",
+                    AirportName = "Tullamarine",
+                    RelatedCityName = "Melbourne"
+                }
+            };
+
+            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
+            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
+                .Returns(airports);
+            destinationsFilterMock
+                .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
+                .Returns(flights);
+
+            // Act
+            var result = flightsController.GetDestinationPrices(request).Result;
+            var okResult = ((OkObjectResult) result.Result);
+            var responseList = okResult.Value as List<FlightDestinationResponse>; 
+            
+            // Assert
+            responseList.Should().NotBeNull();
+            responseList.Should().OnlyContain(i => i.FlightDates.ReturnDate == request.Dates.DateUntil);
+
+        }
+        
+        [Theory]
+        [AutoMoqData]
+        public void GetDestinationPrices_GetDestinationPrices_ReturnDateMatchDateUntil_False(
+            [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
+            FlightsController flightsController
+        )
+        {
+            // Arrange
+            var request = new FlightDestinationRequest
+            {
+                DepartureAirportId = "MEL",
+                Dates = new DatesRequest
+                {
+                    DateFrom = DateTime.Parse("2019-09-15"),
+                    DateUntil = DateTime.Parse("2019-10-15")
+                },
+                Budget = new Budget() {Min = 0, Max = 1000},
+                SearchArea = new SearchArea()
+                {
+                    Nw = new Coordinates(43, -32),
+                    Se = new Coordinates(32, 36)
+                }
+            };
+
+            var flights = new List<ReturnFlightDestinationDto>()
+            {
+                new ReturnFlightDestinationDto
+                {
+                    To = "MEL",
+                    LowestPrice = 50,
+                    DateDeparture = DateTime.Now,
+                    DateBack = DateTime.Now
+                }
+            };
+
+            var airports = new List<AirportDto>()
+            {
+                new AirportDto
+                {
+                    Lat = -5.1912441010878609,
+                    Lng = 104.71056084999998,
+                    IataCode = "MEL",
+                    AirportName = "Tullamarine",
+                    RelatedCityName = "Melbourne"
+                }
+            };
+
+            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
+            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
+                .Returns(airports);
+            destinationsFilterMock
+                .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
+                .Returns(flights);
+
+            // Act
+            var result = flightsController.GetDestinationPrices(request).Result;
+            var okResult = ((OkObjectResult) result.Result);
+            var responseList = okResult.Value as List<FlightDestinationResponse>; 
+            
+            // Assert
+            responseList.Should().NotBeNull();
+            responseList.Should().NotContain(i => i.FlightDates.ReturnDate == request.Dates.DateUntil);
+
+        }
+        [Theory]
+        [AutoMoqData]
+        public void GetDestinationPrices_FlightDestinationWithinSearchArea_True(
+            [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
+            FlightsController flightsController
+        )
+        {
+            // Arrange
+            var request = new FlightDestinationRequest
+            {
+                DepartureAirportId = "MEL",
+                Dates = new DatesRequest
+                {
+                    DateFrom = DateTime.Parse("2019-09-15"),
+                    DateUntil = DateTime.Parse("2019-10-15")
+                },
+                Budget = new Budget() {Min = 0, Max = 1000},
+                SearchArea = new SearchArea()
+                {
+                    Nw = new Coordinates(43, -32),
+                    Se = new Coordinates(32, 36)
+                }
+            };
+
+            var flights = new List<ReturnFlightDestinationDto>()
+            {
+                new ReturnFlightDestinationDto
+                {
+                    To = "MEL",
+                    LowestPrice = 50,
+                    DateDeparture = DateTime.Now,
+                    DateBack = DateTime.Now
+                }
+            };
+
+            var airports = new List<AirportDto>()
+            {
+                new AirportDto
+                {
+                    Lat = -5.1912441010878609,
+                    Lng = 104.71056084999998,
+                    IataCode = "MEL",
+                    AirportName = "Tullamarine",
+                    RelatedCityName = "Melbourne"
+                }
+            };
+
+            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
+            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
+                .Returns(airports);
+            destinationsFilterMock
+                .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
+                .Returns(flights);
+            
+            // Act
+            var result = flightsController.GetDestinationPrices(request).Result;
+            var okResult = ((OkObjectResult) result.Result);
+            var responseList = okResult.Value as List<FlightDestinationResponse>;
+
+            // Assert
+            responseList.Should().NotBeNull();
+            responseList.Should().HaveCount(q => q == 1);
+    
+        }
+        
+         [Theory]
+        [AutoMoqData]
+        public void GetDestinationPrices_FlightDestinationWithinSearchArea_False(
+            [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
+            FlightsController flightsController
+        )
+        {
+            // Arrange
+            var request = new FlightDestinationRequest
+            {
+                DepartureAirportId = "MEL",
+                Dates = new DatesRequest
+                {
+                    DateFrom = DateTime.Parse("2019-09-15"),
+                    DateUntil = DateTime.Parse("2019-10-15")
+                },
+                Budget = new Budget() {Min = 0, Max = 1000},
+                SearchArea = new SearchArea()
+                {
+                    Nw = new Coordinates(6, -7),
+                    Se = new Coordinates(12, 11)
+                }
+            };
+
+            var flights = new List<ReturnFlightDestinationDto>()
+            {
+                new ReturnFlightDestinationDto
+                {
+                    To = "GOH",
+                    LowestPrice = 50,
+                    DateDeparture = DateTime.Now,
+                    DateBack = DateTime.Now
+                }
+            };
+
+            var airports = new List<AirportDto>()
+            {
+                new AirportDto
+                {
+                    Lat = 64.187832582,
+                    Lng = -51.673497306,
+                    IataCode = "GOH",
+                    AirportName = "Nuuk Airport",
+                    RelatedCityName = "Nuuk"
+
+                }
+            };
+
+            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
+            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
+                .Returns(airports);
+            destinationsFilterMock
+                .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
+                .Returns(flights);
+
+            // Act
+            var result = flightsController.GetDestinationPrices(request).Result;
+            var okResult = ((OkObjectResult) result.Result);
+            var responseList = okResult.Value as List<FlightDestinationResponse>;
+
+            // Assert
+            responseList.Should().NotBeNull();
+            responseList.Should().HaveCount(q => q == 1);
+    
+        }
     }
 }
