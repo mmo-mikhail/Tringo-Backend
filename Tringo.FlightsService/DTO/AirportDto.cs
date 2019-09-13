@@ -8,5 +8,13 @@ namespace Tringo.FlightsService.DTO
         public string IataCode { get; set; }
         public string AirportName { get; set; }
         public string RelatedCityName { get; set; }
+        public int NumberOfPassengers { get; set; }
+    }
+
+    class AirportsData
+    {
+        public string IATACode { get; set; }
+
+        public int NumberofPassengers { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tringo.FlightsService;
+using Tringo.FlightsService.DTO;
 using Tringo.WebApp.Models;
 
 namespace Tringo.WebApp.Controllers
@@ -73,6 +74,7 @@ namespace Tringo.WebApp.Controllers
 			var repsData = filteredFlights.Select(f =>
             {
                 var destinationAirport = relatedAirports.First(a => a.IataCode == f.To);
+                var priorityIdx = FindPriorityIdx(relatedAirports, destinationAirport);
                 return new FlightDestinationResponse
                 {
                     Price = f.LowestPrice * inputData.NumberOfPeople,
@@ -80,7 +82,7 @@ namespace Tringo.WebApp.Controllers
 					CityName = destinationAirport.RelatedCityName,
                     Lat = destinationAirport.Lat,
                     Lng = destinationAirport.Lng,
-					PersonalPriorityIdx = 1,
+					PersonalPriorityIdx = priorityIdx,
 					FlightDates = new FlightDates
 					{
 						DepartureDate = f.DateDeparture.Date,
@@ -89,6 +91,24 @@ namespace Tringo.WebApp.Controllers
                 };
             }).ToList();
             return repsData.Count > 0 ? Ok(repsData) : NoContent() as ActionResult;
+        }
+
+        private int FindPriorityIdx(List<AirportDto> relatedAirports, AirportDto destinationAirport)
+        {
+            if (destinationAirport.NumberOfPassengers == default)
+            {
+                return -1;
+            }
+            var allValues = relatedAirports.Where(a => a.NumberOfPassengers != default).Select(a => a.NumberOfPassengers);
+            var minValue = allValues.Min();
+            var localPercentage = 100.0 * (destinationAirport.NumberOfPassengers - minValue) / allValues.Max() - minValue;
+
+            var min = FlightDestinationResponse.LowestPriorityIdx;
+            var max = FlightDestinationResponse.MaxPriorityIdx;
+
+            var priority = (localPercentage * (max - min) / 100.0) - min;
+
+            return (int)Math.Round(priority);
         }
     }
 }
