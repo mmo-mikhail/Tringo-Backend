@@ -62,13 +62,10 @@ namespace Tringo.WebApp.Controllers
                 .FilterFlightsByDates(filteredFlights, inputData.Dates)
                 .ToList();
 
-			if (inputData.Dates.UncertainDates != null)
-			{
-				// It may happen that when unknown dates -> many same flights (with same from-to airports) filtered,
-				// but with different prices
-				// so need to select only MIN price for all same destinations
-				filteredFlights = _destinationsFilter.FilterLowestPriceOnly(filteredFlights).ToList();
-			}
+			// It may happen that when unknown dates -> many same flights (with same from-to airports) filtered,
+			// but with different prices
+			// so need to select only MIN price for all same destinations
+			filteredFlights = _destinationsFilter.FilterLowestPriceOnly(filteredFlights).ToList();
 
 			// Map filtered flights to response
 			var repsData = filteredFlights.Select(f =>
@@ -85,8 +82,7 @@ namespace Tringo.WebApp.Controllers
 					PersonalPriorityIdx = priorityIdx,
 					FlightDates = new FlightDates
 					{
-						DepartureDate = f.DateDeparture.Date,
-						ReturnDate = f.DateBack.Date
+						FlightMonthidx = f.DateDeparture.Month
 					}
                 };
             }).ToList();
