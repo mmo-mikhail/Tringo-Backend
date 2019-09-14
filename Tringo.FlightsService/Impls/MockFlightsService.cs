@@ -23,6 +23,9 @@ namespace Tringo.FlightsService.Impls
 
             var results = new List<AirportDto>();
             var lines = File.ReadAllLines("MockFiles/airports.txt");
+            var airportsPassangers = File.ReadAllText("MockFiles/AirportsPassengers.json");
+            var airports = JsonConvert.DeserializeObject<IEnumerable<AirportsData>>(airportsPassangers).ToList();
+
             foreach (var line in lines)
             {
                 if (string.IsNullOrWhiteSpace(line))
@@ -44,6 +47,9 @@ namespace Tringo.FlightsService.Impls
                 var coords = values[3].Split(',');
                 var lng = coords[0].Replace("\"", "").Trim();
                 var lat = coords[1].Replace("\"", "").Trim();
+
+                var airportsData = airports.FirstOrDefault(a => a.IATACode == iataCode);
+                
                 results.Add(new AirportDto
                 {
                     AirportName = values[1],
@@ -53,7 +59,8 @@ namespace Tringo.FlightsService.Impls
                         .Trim(),
                     IataCode = iataCode,
                     Lat = double.Parse(lat),
-                    Lng = double.Parse(lng)
+                    Lng = double.Parse(lng),
+                    NumberOfPassengers = airportsData == null ? default : airportsData.NumberofPassengers
                 });
             }
             storedAirports = results;
