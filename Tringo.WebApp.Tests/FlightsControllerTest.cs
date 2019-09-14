@@ -131,8 +131,11 @@ namespace Tringo.WebApp.Tests
             destinationsFilterMock
                 .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
                 .Returns(flights);
+            destinationsFilterMock
+                .Setup(df => df.FilterLowestPriceOnly(It.IsAny<List<ReturnFlightDestinationDto>>()))
+                .Returns<IEnumerable<ReturnFlightDestinationDto>>((sourceAirports) => sourceAirports);
 
-//            // Act
+            //            // Act
             var result = flightsController.GetDestinationPrices(request).Result;
 //            // Assert
             result.Should().NotBeNull();
@@ -190,7 +193,10 @@ namespace Tringo.WebApp.Tests
                 .Returns(airports);
             destinationsFilterMock
                 .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
-                .Returns(flights);
+                .Returns<IEnumerable<ReturnFlightDestinationDto>, DatesRequest>((sourceAirports, dates) => sourceAirports);
+            destinationsFilterMock
+                .Setup(df => df.FilterLowestPriceOnly(It.IsAny<List<ReturnFlightDestinationDto>>()))
+                .Returns<IEnumerable<ReturnFlightDestinationDto>>((sourceAirports) => sourceAirports);
 
             // Act
             var result = flightsController.GetDestinationPrices(request).Result;
@@ -253,16 +259,16 @@ namespace Tringo.WebApp.Tests
                 .Returns(airports);
             destinationsFilterMock
                 .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
-                .Returns(flights);
+                .Returns<IEnumerable<ReturnFlightDestinationDto>, DatesRequest>((sourceAirports, dates) => sourceAirports);
+            destinationsFilterMock
+                .Setup(df => df.FilterLowestPriceOnly(It.IsAny<List<ReturnFlightDestinationDto>>()))
+                .Returns<IEnumerable<ReturnFlightDestinationDto>>((sourceAirports) => sourceAirports);
 
             // Act
             var result = flightsController.GetDestinationPrices(request).Result;
-            var okResult = ((OkObjectResult) result.Result);
-            var responseList = okResult.Value as List<FlightDestinationResponse>; 
-            
+
             // Assert
-            responseList.Should().NotBeNull();
-            responseList.Should().NotContain(x => x.Price <= request.Budget.Max);
+            result.Result.Should().BeOfType<NoContentResult>();
         }
         
         [Theory]
@@ -319,6 +325,9 @@ namespace Tringo.WebApp.Tests
             destinationsFilterMock
                 .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
                 .Returns(flights);
+            destinationsFilterMock
+                .Setup(df => df.FilterLowestPriceOnly(It.IsAny<List<ReturnFlightDestinationDto>>()))
+                .Returns<IEnumerable<ReturnFlightDestinationDto>>((sourceAirports) => sourceAirports);
 
             // Act
             var result = flightsController.GetDestinationPrices(request).Result;
@@ -387,6 +396,9 @@ namespace Tringo.WebApp.Tests
             destinationsFilterMock
                 .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
                 .Returns(flights);
+            destinationsFilterMock
+                .Setup(df => df.FilterLowestPriceOnly(It.IsAny<List<ReturnFlightDestinationDto>>()))
+                .Returns<IEnumerable<ReturnFlightDestinationDto>>((sourceAirports) => sourceAirports);
 
             // Act
             var result = flightsController.GetDestinationPrices(request).Result;
@@ -452,8 +464,11 @@ namespace Tringo.WebApp.Tests
                 .Returns(airports);
             destinationsFilterMock
                 .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
-                .Returns(flights);
-            
+                .Returns<IEnumerable<ReturnFlightDestinationDto>, DatesRequest>((sourceAirports, dates) => sourceAirports);
+            destinationsFilterMock
+                .Setup(df => df.FilterLowestPriceOnly(It.IsAny<List<ReturnFlightDestinationDto>>()))
+                .Returns<IEnumerable<ReturnFlightDestinationDto>>((sourceAirports) => sourceAirports);
+
             // Act
             var result = flightsController.GetDestinationPrices(request).Result;
             var okResult = ((OkObjectResult) result.Result);
@@ -519,7 +534,10 @@ namespace Tringo.WebApp.Tests
                 .Returns(airports);
             destinationsFilterMock
                 .Setup(df => df.FilterFlightsByDates(It.IsAny<List<ReturnFlightDestinationDto>>(), request.Dates))
-                .Returns(flights);
+                .Returns<IEnumerable<ReturnFlightDestinationDto>, DatesRequest>((sourceAirports, dates) => sourceAirports);
+            destinationsFilterMock
+                .Setup(df => df.FilterLowestPriceOnly(It.IsAny<List<ReturnFlightDestinationDto>>()))
+                .Returns<IEnumerable<ReturnFlightDestinationDto>>((sourceAirports) => sourceAirports);
 
             // Act
             var result = flightsController.GetDestinationPrices(request).Result;
