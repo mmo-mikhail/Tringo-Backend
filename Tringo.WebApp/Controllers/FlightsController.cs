@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tringo.FlightsService;
+using Tringo.FlightsService.DTO;
 using Tringo.WebApp.Models;
 
 namespace Tringo.WebApp.Controllers
@@ -45,34 +46,65 @@ namespace Tringo.WebApp.Controllers
                 .ToList();
             var airportsIatas = relatedAirports.Select(a => a.IataCode);
 
-            // Base filtering:
-            // - by Budget
-            // - by flights to airports within requested area
-            var fitleredFlights = allFlights
-                .Where(f =>
-                    inputData.Budget.Min < f.LowestPrice && f.LowestPrice < inputData.Budget.Max
-                    && airportsIatas.Contains(f.To))
-                .ToList();
+			// Filtering:
+			// Filter by flights to airports within requested area
+			var filteredFlights = allFlights.Where(f => airportsIatas.Contains(f.To)).ToList();
 
+			// Filter by Budget
+			if (inputData.Budget != null)
+			{
+				filteredFlights = filteredFlights.Where(f =>
+					inputData.Budget.Min < f.LowestPrice && f.LowestPrice < inputData.Budget.Max).ToList();
+			}
+			
             // Filter by Dates
-            fitleredFlights = _destinationsFilter
-                .FilterFlightsByDates(fitleredFlights, inputData.Dates)
+            filteredFlights = _destinationsFilter
+                .FilterFlightsByDates(filteredFlights, inputData.Dates)
                 .ToList();
 
-            // Map filtered flights to response
-            var repsData = fitleredFlights.Select(f =>
+			// It may happen that when unknown dates -> many same flights (with same from-to airports) filtered,
+			// but with different prices
+			// so need to select only MIN price for all same destinations
+			filteredFlights = _destinationsFilter.FilterLowestPriceOnly(filteredFlights).ToList();
+
+			// Map filtered flights to response
+			var repsData = filteredFlights.Select(f =>
             {
-                var destinationAiport = relatedAirports.First(a => a.IataCode == f.To);
+                var destinationAirport = relatedAirports.First(a => a.IataCode == f.To);
+                var priorityIdx = FindPriorityIdx(relatedAirports, destinationAirport);
                 return new FlightDestinationResponse
                 {
                     Price = f.LowestPrice * inputData.NumberOfPeople,
-                    CityName = destinationAiport.RelatedCityName,
-                    Lat = destinationAiport.Lat,
-                    Lng = destinationAiport.Lng,
-                    PersonalPriorityIdx = 1
+                    DestAirportCode = destinationAirport.IataCode,
+					CityName = destinationAirport.RelatedCityName,
+                    Lat = destinationAirport.Lat,
+                    Lng = destinationAirport.Lng,
+					PersonalPriorityIdx = priorityIdx,
+					FlightDates = new FlightDates
+					{
+						FlightMonthidx = f.DateDeparture.Month
+					}
                 };
             }).ToList();
             return repsData.Count > 0 ? Ok(repsData) : NoContent() as ActionResult;
+        }
+
+        private int FindPriorityIdx(List<AirportDto> relatedAirports, AirportDto destinationAirport)
+        {
+            if (destinationAirport.NumberOfPassengers == default)
+            {
+                return -1;
+            }
+            var allValues = relatedAirports.Where(a => a.NumberOfPassengers != default).Select(a => a.NumberOfPassengers);
+            var minValue = allValues.Min();
+            var localPercentage = 100.0 * (destinationAirport.NumberOfPassengers - minValue) / allValues.Max() - minValue;
+
+            var min = FlightDestinationResponse.LowestPriorityIdx;
+            var max = FlightDestinationResponse.MaxPriorityIdx;
+
+            var priority = (localPercentage * (max - min) / 100.0) - min;
+
+            return (int)Math.Round(priority);
         }
     }
 }
