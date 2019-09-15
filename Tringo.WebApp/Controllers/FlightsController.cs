@@ -46,7 +46,7 @@ namespace Tringo.WebApp.Controllers
                 .ToList();
             var airportsIatas = relatedAirports.Select(a => a.IataCode);
 
-            if (allFlights is null || allAirports is null)
+            if (allFlights is null)
                 return NoContent();
 
 			// Filtering:
