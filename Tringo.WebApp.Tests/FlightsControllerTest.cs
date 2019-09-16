@@ -336,7 +336,7 @@ namespace Tringo.WebApp.Tests
             
             // Assert
             responseList.Should().NotBeNull();
-            responseList.Should().OnlyContain(i => i.FlightDates.FlightMonthidx == request.Dates.MonthIdx);
+            responseList.Should().OnlyContain(i => i.FlightDates.DepartureDate.Month == request.Dates.MonthIdx);
 
         }
         
@@ -407,7 +407,7 @@ namespace Tringo.WebApp.Tests
             
             // Assert
             responseList.Should().NotBeNull();
-            responseList.Should().NotContain(i => i.FlightDates.FlightMonthidx == request.Dates.MonthIdx);
+            responseList.Should().NotContain(i => i.FlightDates.DepartureDate.Month == request.Dates.MonthIdx);
 
         }
         

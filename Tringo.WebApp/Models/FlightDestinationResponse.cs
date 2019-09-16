@@ -30,10 +30,10 @@ namespace Tringo.WebApp.Models
         /// </summary>
         public string DestAirportCode { get; set; }
 
-		/// <summary>
-		/// Departure Month
-		/// </summary>
-		public FlightDates FlightDates { get; set; }
+        /// <summary>
+        /// Departure and Return Dates
+        /// </summary>
+        public FlightDates FlightDates { get; set; }
 
 		/// <summary>
 		/// Shows how importnat the flight destination for the user
@@ -50,9 +50,8 @@ namespace Tringo.WebApp.Models
 
     public class FlightDates
     {
-        /// <summary>
-        /// Month. Jan - 1, Feb - 2 and so on
-        /// </summary>
-        public int FlightMonthidx { get; set; }
+        public DateTime DepartureDate { get; set; }
+
+        public DateTime ReturnDate { get; set; }
     }
 }
