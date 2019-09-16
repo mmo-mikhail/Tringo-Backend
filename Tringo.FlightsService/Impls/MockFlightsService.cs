@@ -63,6 +63,7 @@ namespace Tringo.FlightsService.Impls
                     NumberOfPassengers = airportsData == null ? default : airportsData.NumberofPassengers
                 });
             }
+            results = results.OrderByDescending(a => a.NumberOfPassengers).Take(200).ToList();
             storedAirports = results;
             return storedAirports;
         }

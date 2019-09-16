@@ -85,8 +85,9 @@ namespace Tringo.WebApp.Controllers
 					PersonalPriorityIdx = priorityIdx,
 					FlightDates = new FlightDates
 					{
-						FlightMonthidx = f.DateDeparture.Month
-					}
+                        DepartureDate = f.DateDeparture.Date,
+                        ReturnDate = f.DateBack.Date
+                    }
                 };
             }).ToList();
             return repsData.Count > 0 ? Ok(repsData) : NoContent() as ActionResult;
