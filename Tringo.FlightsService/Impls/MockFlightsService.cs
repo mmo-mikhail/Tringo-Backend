@@ -3,85 +3,36 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Tringo.FlightsService.DTO;
 
 namespace Tringo.FlightsService.Impls
 {
     public class MockFlightsService : IFlightsService
     {
-        private static IEnumerable<AirportDto> storedAirports;
         private static Dictionary<string, IEnumerable<ReturnFlightDestinationDto>> storedFlights
 			= new Dictionary<string, IEnumerable<ReturnFlightDestinationDto>>();
 
 		private static object flightsLock= new object();
+        private readonly IAirportsService _airportsService;
 
-
-        public IEnumerable<AirportDto> GetAirports()
+        public MockFlightsService(IAirportsService airportsService)
         {
-            if (storedAirports != null)
-                return storedAirports;
-
-            var results = new List<AirportDto>();
-            var lines = File.ReadAllLines("MockFiles/airports.txt");
-            var airportsPassangers = File.ReadAllText("MockFiles/AirportsPassengers.json");
-            var airportsNamesWJ = File.ReadAllText("MockFiles/AirportNamesWJ.json");
-            var airports = JsonConvert.DeserializeObject<IEnumerable<AirportsData>>(airportsPassangers).ToList();
-            var airportsNames = JsonConvert.DeserializeObject<AirportNamesWJModels>(airportsNamesWJ).AirportCityInfo;
-
-            foreach (var line in lines)
-            {
-                if (string.IsNullOrWhiteSpace(line))
-                    continue;
-
-                var values = line.Split('\t');
-                if (values.Length < 2)
-                    continue;
-
-                var type = values[0];
-                if (type != "large_airport")
-					//if (type != "medium_airport" && type != "large_airport") // Exclude Medium airports for MVP
-					continue;
-
-                var iataCode = values[2];
-                if (string.IsNullOrWhiteSpace(iataCode))
-                    continue;
-
-                var coords = values[3].Split(',');
-                var lng = coords[0].Replace("\"", "").Trim();
-                var lat = coords[1].Replace("\"", "").Trim();
-
-                var airportsData = airports.FirstOrDefault(a => a.IATACode == iataCode);
-
-                var airportNameData = airportsNames.FirstOrDefault(n => n.TSAAirportCode == iataCode);
-                if (airportNameData == null)
-                {
-                    continue;
-                }
-                results.Add(new AirportDto
-                {
-                    AirportName = values[1],
-                    RelatedCityName = airportNameData.CityName,
-                    IataCode = iataCode,
-                    Lat = double.Parse(lat),
-                    Lng = double.Parse(lng),
-                    NumberOfPassengers = airportsData == null ? default : airportsData.NumberofPassengers
-                });
-            }
-            results = results.OrderByDescending(a => a.NumberOfPassengers).Take(200).ToList();
-            storedAirports = results;
-            return storedAirports;
+            _airportsService = airportsService;
         }
 
-        public IEnumerable<ReturnFlightDestinationDto> GetFlights(string airportFromCode)
+        public async Task<IEnumerable<ReturnFlightDestinationDto>> GetFlights(WJFlightsRequest WJFlightsRequest)
         {
             // usually the generated flights.json already exists on server,
             // but if not, it'll be re-generated
 
+            var airportFromCode = WJFlightsRequest.DepartureAirportCode;
             var flightsFileName = $"MockFiles/flights-{airportFromCode}.json";
 
 			if (storedFlights.ContainsKey(flightsFileName))
 				return storedFlights[flightsFileName];
 
+            await Task.Delay(10);
             if (File.Exists(flightsFileName))
 			{
 				var data = JsonConvert.DeserializeObject<IEnumerable<ReturnFlightDestinationDto>>(
@@ -96,7 +47,7 @@ namespace Tringo.FlightsService.Impls
             {
                 using (File.Create(flightsFileName)) { }
 
-				var airports = GetAirports().ToList();
+				var airports = _airportsService.GetAirports().ToList();
                 var flightsList = new List<ReturnFlightDestinationDto>();
                 var random = new Random();
                 var percentRandom = new Random();

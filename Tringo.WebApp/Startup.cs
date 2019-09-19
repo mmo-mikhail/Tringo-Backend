@@ -8,6 +8,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.AzureAppServices;
 using Newtonsoft.Json;
+using System;
 using Tringo.FlightsService;
 using Tringo.FlightsService.Impls;
 using Tringo.WebApp.HealthChecks;
@@ -53,7 +54,9 @@ namespace Tringo.WebApp
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddSingleton<IFlightsService>(new MockFlightsService());
+
+            services.AddSingleton<IAirportsService>(new AirportsService());
+            services.AddSingleton<IFlightsService>(sp => new MockFlightsService(sp.GetService<IAirportsService>()));
             services.AddSingleton<IDestinationsFilter>(new DestinationsFilter());
 
             //Health Checks
@@ -63,15 +66,20 @@ namespace Tringo.WebApp
                     failureStatus: HealthStatus.Degraded,
                     tags: new[] { "initial" });
 
-            // TODO Polly. Will be set up later
-            services.AddHttpClient();
-
             // Configure logging (text files) to Azure FileSystem
             services.Configure<AzureFileLoggerOptions>(options =>
             {
                 options.FileName = "azure-diagnostics-";
                 options.FileSizeLimit = 50 * 1024;
                 options.RetainedFileCountLimit = 5;
+            });
+
+            // Configure WebJet http client
+            // TODO: Add Polly later on 
+            services.AddHttpClient("webjet", c =>
+            {
+                c.BaseAddress = new Uri(@"https://services.webjet.com.au/");
+                //c.DefaultRequestHeaders.Add("Accept", "");
             });
         }
 

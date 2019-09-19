@@ -16,31 +16,87 @@ namespace Tringo.WebApp.Controllers
     {
         private readonly ILogger _logger;
         private readonly IFlightsService _flightsService;
+        private readonly IAirportsService _airportsService;
         private readonly IDestinationsFilter _destinationsFilter;
 
         public FlightsController(ILoggerFactory logger,
             IFlightsService flightsService,
+            IAirportsService airportsService,
             IDestinationsFilter destinationsFilter)
         {
             _logger = logger.CreateLogger(GetType());
             _flightsService = flightsService;
+            _airportsService = airportsService;
             _destinationsFilter = destinationsFilter;
         }
-        
 
+        /// <summary>
+        /// Designed to operate with real WebJet API
+        /// </summary>
+        [HttpPost]
+        public async Task<ActionResult<IEnumerable<FlightDestinationResponse>>> GetLowestPrices(
+            [FromBody]FlightDestinationRequest inputData)
+        {
+            var reqData = new WJFlightsRequest
+            {
+                DepartureAirportCode = inputData.DepartureAirportId,
+                MaxPriceLimit = inputData.Budget?.Max,
+                TravelClass = "Economy"
+            };
+            if (inputData.Dates.MonthIdx != -1)
+            {
+                reqData.DepartYear = inputData.Dates.MonthIdx < DateTime.Now.Month
+                        ? DateTime.Now.Year + 1
+                        : DateTime.Now.Year;
+                reqData.DepartMonth = inputData.Dates.MonthIdx;
+            }
+
+            var allAirports = _airportsService.GetAirports();
+            var relatedAirports = _destinationsFilter
+                .FilterAirports(allAirports, inputData.SearchArea)
+                .ToList();
+            var airportsIatas = relatedAirports.Select(a => a.IataCode);
+            reqData.DestinationAirportCodes = airportsIatas;
+
+            var filteredFlights = await _flightsService.GetFlights(reqData);
+
+            // Map filtered flights to response
+            var repsData = filteredFlights.Select(f =>
+            {
+                var destinationAirport = relatedAirports.First(a => a.IataCode == f.To);
+                var priorityIdx = FindPriorityIdx(relatedAirports, destinationAirport);
+                return new FlightDestinationResponse
+                {
+                    Price = f.LowestPrice * inputData.NumberOfPeople,
+                    DestAirportCode = destinationAirport.IataCode,
+                    CityName = destinationAirport.RelatedCityName,
+                    Lat = destinationAirport.Lat,
+                    Lng = destinationAirport.Lng,
+                    PersonalPriorityIdx = priorityIdx,
+                    FlightDates = new FlightDates
+                    {
+                        DepartureDate = f.DateDeparture.Date,
+                        ReturnDate = f.DateBack.Date
+                    }
+                };
+            }).ToList();
+            return repsData.Count > 0 ? Ok(repsData) : NoContent() as ActionResult;
+        }
+
+        /// <summary>
+        /// Designed to operates with MOCK flights data only
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<IEnumerable<FlightDestinationResponse>>> GetDestinationPrices(
             [FromBody]FlightDestinationRequest inputData)
         {
-            // just for testing and must be deleted soon
-            await Task.Delay(100); // TODO: remove this line
-
             if (inputData == null)
                 return new BadRequestResult();
 
             // Find related flights
-            var allFlights = _flightsService.GetFlights(inputData.DepartureAirportId);
-            var allAirports = _flightsService.GetAirports();
+            var allFlights = await _flightsService.GetFlights(
+                new WJFlightsRequest { DepartureAirportCode = inputData.DepartureAirportId });
+            var allAirports = _airportsService.GetAirports();
             var relatedAirports = _destinationsFilter
                 .FilterAirports(allAirports, inputData.SearchArea)
                 .ToList();
