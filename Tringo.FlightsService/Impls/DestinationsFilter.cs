@@ -10,9 +10,10 @@ namespace Tringo.FlightsService.Impls
 		public IEnumerable<AirportDto> FilterAirports(
 			IEnumerable<AirportDto> sourceAirports, SearchArea searchArea)
 		{
+
             return sourceAirports.Where(airport =>
                 WithinRectangle(
-                    searchArea.Nw.Lat,
+                    searchArea.Nw.Lat, 
                     searchArea.Nw.Lng,
                     searchArea.Se.Lat,
                     searchArea.Se.Lng,
@@ -57,8 +58,15 @@ namespace Tringo.FlightsService.Impls
 			return cheapestFlights;
 		}
 
-		#region helpers
+        #region helpers
 
+        /// <summary>
+        /// NW......
+        /// ........
+        /// ........
+        /// ......SE
+        /// </summary>
+        /// <returns></returns>
         // Just to show the idea with 180 lattitude;
         // First 4 parameters could be crammed into RectagleF
         // And last 2 parameters into PointF

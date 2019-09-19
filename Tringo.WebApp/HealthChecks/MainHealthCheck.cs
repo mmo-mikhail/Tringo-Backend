@@ -9,27 +9,32 @@ namespace Tringo.WebApp.HealthChecks
     public class MainHealthCheck : IHealthCheck
     {
         private readonly IFlightsService _flightsService;
+        private readonly IAirportsService _airportsService;
 
-        public MainHealthCheck(IFlightsService flightsService)
+        public MainHealthCheck(IFlightsService flightsService,
+            IAirportsService airportsService)
         {
             _flightsService = flightsService;
+            _airportsService = airportsService;
         }
 
-        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
+        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
             CancellationToken cancellationToken = default)
         {
             var healthCheckResultHealthy =
-                _flightsService.GetAirports().Any()
-                && _flightsService.GetFlights("MEL").Any()
-				&& _flightsService.GetFlights("SYD").Any();
+                _airportsService.GetAirports().Any()
+                && (await _flightsService.GetFlights(
+                    new FlightsService.DTO.WJFlightsRequest { DepartureAirportCode = "MEL" })).Any()
+                && (await _flightsService.GetFlights(
+                    new FlightsService.DTO.WJFlightsRequest { DepartureAirportCode = "SYD" })).Any();
 
             if (healthCheckResultHealthy)
             {
-                return Task.FromResult(
+                return await Task.FromResult(
                     HealthCheckResult.Healthy("The check indicates a healthy result."));
             }
 
-            return Task.FromResult(
+            return await Task.FromResult(
                 HealthCheckResult.Unhealthy("The check indicates an unhealthy result."));
         }
     }

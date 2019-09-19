@@ -37,6 +37,7 @@ namespace Tringo.WebApp.Tests
         [AutoMoqData]
         public void GetDestinationPrices_NoContent(
             [Frozen] Mock<IFlightsService> flightsService,
+            [Frozen] Mock<IAirportsService> airportsService,
             FlightsController flightsController
         )
         {
@@ -68,8 +69,8 @@ namespace Tringo.WebApp.Tests
                     // TODO ...
                 }
             };
-            flightsService.Setup(_ => _.GetFlights(It.IsAny<string>())).Returns(flights);
-            flightsService.Setup(_ => _.GetAirports()).Returns(airports);
+            flightsService.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
+            airportsService.Setup(_ => _.GetAirports()).Returns(airports);
 
             // Act
             var result = flightsController.GetDestinationPrices(request).Result;
@@ -84,6 +85,7 @@ namespace Tringo.WebApp.Tests
         [AutoMoqData]
         public void GetDestinationPrices_OkResult(
             [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IAirportsService> airportsService,
             [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
             FlightsController flightsController
         )
@@ -124,8 +126,8 @@ namespace Tringo.WebApp.Tests
                 }
             };
 
-            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
-            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
+            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
@@ -147,6 +149,7 @@ namespace Tringo.WebApp.Tests
         [AutoMoqData]
         public void GetDestinationPrices_PriceWithinBudget_True(
             [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IAirportsService> airportsService,
             [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
             FlightsController flightsController
         )
@@ -187,8 +190,8 @@ namespace Tringo.WebApp.Tests
                 }
             };
 
-            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
-            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
+            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
@@ -213,6 +216,7 @@ namespace Tringo.WebApp.Tests
         [AutoMoqData]
         public void GetDestinationPrices_PriceWithinBudget_False(
             [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IAirportsService> airportsService,
             [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
             FlightsController flightsController
         )
@@ -253,8 +257,8 @@ namespace Tringo.WebApp.Tests
                 }
             };
 
-            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
-            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
+            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
@@ -275,6 +279,7 @@ namespace Tringo.WebApp.Tests
         [AutoMoqData]
         public void GetDestinationPrices_DateDepartureMatchDateFrom_True(
             [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IAirportsService> airportsService,
             [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
             FlightsController flightsController
         )
@@ -318,8 +323,8 @@ namespace Tringo.WebApp.Tests
                 }
             };
 
-            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
-            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
+            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
@@ -344,6 +349,7 @@ namespace Tringo.WebApp.Tests
         [AutoMoqData]
         public void GetDestinationPrices_DateDepartureMatchDateFrom_False(
             [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IAirportsService> airportsService,
             [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
             FlightsController flightsController
         )
@@ -389,8 +395,8 @@ namespace Tringo.WebApp.Tests
                 }
             };
 
-            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
-            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
+            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
@@ -415,6 +421,7 @@ namespace Tringo.WebApp.Tests
         [AutoMoqData]
         public void GetDestinationPrices_FlightDestinationWithinSearchArea_True(
             [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IAirportsService> airportsService,
             [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
             FlightsController flightsController
         )
@@ -458,8 +465,8 @@ namespace Tringo.WebApp.Tests
                 }
             };
 
-            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
-            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
+            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
@@ -484,6 +491,7 @@ namespace Tringo.WebApp.Tests
         [AutoMoqData]
         public void GetDestinationPrices_FlightDestinationWithinSearchArea_False(
             [Frozen] Mock<IFlightsService> flightsServiceMock,
+            [Frozen] Mock<IAirportsService> airportsService,
             [Frozen] Mock<IDestinationsFilter> destinationsFilterMock,
             FlightsController flightsController
         )
@@ -528,8 +536,8 @@ namespace Tringo.WebApp.Tests
                 }
             };
 
-            flightsServiceMock.Setup(fs => fs.GetFlights(It.IsAny<string>())).Returns(flights);
-            flightsServiceMock.Setup(fs => fs.GetAirports()).Returns(airports);
+            flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
+            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
