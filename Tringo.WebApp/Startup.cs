@@ -8,10 +8,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.AzureAppServices;
 using Newtonsoft.Json;
-using Polly;
-using Polly.Extensions.Http;
 using System;
-using System.Net.Http;
 using Tringo.FlightsService;
 using Tringo.FlightsService.Impls;
 using Tringo.WebApp.HealthChecks;
@@ -58,10 +55,9 @@ namespace Tringo.WebApp
                 }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
 
-            services.AddSingleton<IAirportsService>(new AirportsService());
-            services.AddSingleton<IFlightsService>(sp => new MockFlightsService(sp.GetService<IAirportsService>()));
-            //services.AddTransient<IFlightsService, WJFlightsService>(); // uncomment to use WJ service instead
-            services.AddSingleton<IDestinationsFilter>(new DestinationsFilter());
+            services.AddSingleton<IAirportsService, AirportsService>();
+            services.AddSingleton<IDestinationsFilter, DestinationsFilter>();
+            services.AddTransient<IFlightsService, MockFlightsService>(); // use WJFlightsService instead when ready
 
             //Health Checks
             services.AddHealthChecks()
@@ -85,20 +81,7 @@ namespace Tringo.WebApp
                 //c.DefaultRequestHeaders.Add("Accept", "");
             })
                 //.SetHandlerLifetime(TimeSpan.FromMinutes(1))  //Set lifetime
-                .AddPolicyHandler(GetRetryPolicy());
-        }
-
-        static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
-        {
-            // https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/implement-http-call-retries-exponential-backoff-polly
-            var jitterer = new Random();
-            return HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-                .WaitAndRetryAsync(3,    // exponential back-off plus some jitter
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
-                                + TimeSpan.FromMilliseconds(jitterer.Next(0, 100))
-                );
+                .AddWjPolicyBuilder();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
