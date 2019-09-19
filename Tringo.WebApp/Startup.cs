@@ -55,9 +55,9 @@ namespace Tringo.WebApp
                 }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
 
-            services.AddSingleton<IAirportsService>(new AirportsService());
-            services.AddSingleton<IFlightsService>(sp => new MockFlightsService(sp.GetService<IAirportsService>()));
-            services.AddSingleton<IDestinationsFilter>(new DestinationsFilter());
+            services.AddSingleton<IAirportsService, AirportsService>();
+            services.AddSingleton<IDestinationsFilter, DestinationsFilter>();
+            services.AddTransient<IFlightsService, MockFlightsService>(); // use WJFlightsService instead when ready
 
             //Health Checks
             services.AddHealthChecks()
@@ -75,12 +75,13 @@ namespace Tringo.WebApp
             });
 
             // Configure WebJet http client
-            // TODO: Add Polly later on 
             services.AddHttpClient("webjet", c =>
             {
                 c.BaseAddress = new Uri(@"https://services.webjet.com.au/");
                 //c.DefaultRequestHeaders.Add("Accept", "");
-            });
+            })
+                //.SetHandlerLifetime(TimeSpan.FromMinutes(1))  //Set lifetime
+                .AddWjPolicyBuilder();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
