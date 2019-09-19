@@ -84,7 +84,7 @@ namespace Tringo.WebApp
                 c.BaseAddress = new Uri(@"https://services.webjet.com.au/");
                 //c.DefaultRequestHeaders.Add("Accept", "");
             })
-                .SetHandlerLifetime(TimeSpan.FromMinutes(1))  //Set lifetime
+                //.SetHandlerLifetime(TimeSpan.FromMinutes(1))  //Set lifetime
                 .AddPolicyHandler(GetRetryPolicy());
         }
 
