@@ -1,7 +1,6 @@
 using AutoFixture.Xunit2;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using Tringo.FlightsService;
 using Tringo.FlightsService.DTO;
 using Tringo.WebApp.Controllers;
@@ -10,7 +9,6 @@ using Moq;
 using FluentAssertions;
 using Tringo.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Tringo.WebApp.Tests
 {

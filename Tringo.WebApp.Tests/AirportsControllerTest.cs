@@ -2,9 +2,7 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using Tringo.FlightsService;
 using Tringo.FlightsService.DTO;
 using Tringo.WebApp.Controllers;

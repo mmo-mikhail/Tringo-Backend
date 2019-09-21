@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Tringo.FlightsService;
 using Tringo.FlightsService.DTO;
-using Tringo.WebApp.Models;
 
 namespace Tringo.WebApp.Controllers
 {
