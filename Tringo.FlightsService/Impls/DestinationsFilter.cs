@@ -10,7 +10,7 @@ namespace Tringo.FlightsService.Impls
 		public IEnumerable<AirportDto> FilterAirports(
 			IEnumerable<AirportDto> sourceAirports, SearchArea searchArea)
 		{
-
+            ExtendSearchArea(searchArea, 1.1);
             return sourceAirports.Where(airport =>
                 WithinRectangle(
                     searchArea.Nw.Lat, 
@@ -21,10 +21,23 @@ namespace Tringo.FlightsService.Impls
                     airport.Lng));
 		}
 
-		/// <summary>
-		/// Filter out flights by date request
-		/// </summary>
-		public IEnumerable<ReturnFlightDestinationDto> FilterFlightsByDates(
+        /// <summary>
+        /// Extends Search Area
+        /// </summary>
+        /// <param name="extendStrength">Geo points on how much to extend</param>
+        private void ExtendSearchArea(SearchArea searchArea, double extendStrength)
+        {
+            searchArea.Nw.Lat = searchArea.Nw.Lat + extendStrength;
+            searchArea.Nw.Lng = searchArea.Nw.Lng - extendStrength;
+
+            searchArea.Se.Lat = searchArea.Se.Lat - extendStrength;
+            searchArea.Se.Lng = searchArea.Se.Lng + extendStrength;
+        }
+
+        /// <summary>
+        /// Filter out flights by date request
+        /// </summary>
+        public IEnumerable<ReturnFlightDestinationDto> FilterFlightsByDates(
 			IEnumerable<ReturnFlightDestinationDto> flights, DatesRequest dates)
 		{
             if (dates.MonthIdx != -1)
