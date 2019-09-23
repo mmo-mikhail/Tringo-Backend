@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -22,15 +23,16 @@ namespace Tringo.FlightsService.Impls
             var request = new HttpRequestMessage(HttpMethod.Post,
                 "api/flights/dealfinder/insights/cheapestbydeparture");
 
-
-            request.Content = new StringContent(
-                JsonConvert.SerializeObject(WJFlightsRequest, new JsonSerializerSettings()
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                }),
-                Encoding.UTF8, "application/json");
-
+            var json = JsonConvert.SerializeObject(WJFlightsRequest, new JsonSerializerSettings()
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.Indented,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            request.Method = new HttpMethod("POST");
             var client = _httpClientFactory.CreateClient("webjet");
+
             var response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)

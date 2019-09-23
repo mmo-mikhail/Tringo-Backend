@@ -105,10 +105,10 @@ namespace Tringo.WebApp.Tests
             {
                 new ReturnFlightDestinationDto
                 {
-                    To = "MEL",
-                    LowestPrice = 50,
-                    DateDeparture = DateTime.Now,
-                    DateBack = DateTime.Now
+                    DestinationAirportCode = "MEL",
+                    MinPrice = 50,
+                    DepartDate = DateTime.Now,
+                    ReturnDate = DateTime.Now
                 }
             };
 
@@ -169,10 +169,10 @@ namespace Tringo.WebApp.Tests
             {
                 new ReturnFlightDestinationDto
                 {
-                    To = "MEL",
-                    LowestPrice = 50,
-                    DateDeparture = DateTime.Now,
-                    DateBack = DateTime.Now
+                    DestinationAirportCode = "MEL",
+                    MinPrice = 50,
+                    DepartDate = DateTime.Now,
+                    ReturnDate = DateTime.Now
                 }
             };
 
@@ -236,10 +236,10 @@ namespace Tringo.WebApp.Tests
             {
                 new ReturnFlightDestinationDto
                 {
-                    To = "MEL",
-                    LowestPrice = 1200,
-                    DateDeparture = DateTime.Now,
-                    DateBack = DateTime.Now
+                    DestinationAirportCode = "MEL",
+                    MinPrice = 1200,
+                    DepartDate = DateTime.Now,
+                    ReturnDate = DateTime.Now
                 }
             };
 
@@ -302,10 +302,10 @@ namespace Tringo.WebApp.Tests
             {
                 new ReturnFlightDestinationDto
                 {
-                    To = "MEL",
-                    LowestPrice = 50,
-                    DateDeparture = DateTime.Parse("2019-09-15"),
-                    DateBack = DateTime.Parse("2019-9-25")
+                    DestinationAirportCode = "MEL",
+                    MinPrice = 50,
+                    DepartDate = DateTime.Parse("2019-09-15"),
+                    ReturnDate = DateTime.Parse("2019-9-25")
                 }
             };
 
@@ -374,10 +374,10 @@ namespace Tringo.WebApp.Tests
             {
                 new ReturnFlightDestinationDto
                 {
-                    To = "MEL",
-                    LowestPrice = 50,
-                    DateDeparture = DateTime.Now,
-                    DateBack = DateTime.Now
+                    DestinationAirportCode = "MEL",
+                    MinPrice = 50,
+                    DepartDate = DateTime.Now,
+                    ReturnDate = DateTime.Now
                 }
             };
 
@@ -444,10 +444,10 @@ namespace Tringo.WebApp.Tests
             {
                 new ReturnFlightDestinationDto
                 {
-                    To = "MEL",
-                    LowestPrice = 50,
-                    DateDeparture = DateTime.Now,
-                    DateBack = DateTime.Now
+                    DestinationAirportCode = "MEL",
+                    MinPrice = 50,
+                    DepartDate = DateTime.Now,
+                    ReturnDate = DateTime.Now
                 }
             };
 
@@ -514,10 +514,10 @@ namespace Tringo.WebApp.Tests
             {
                 new ReturnFlightDestinationDto
                 {
-                    To = "GOH",
-                    LowestPrice = 50,
-                    DateDeparture = DateTime.Now,
-                    DateBack = DateTime.Now
+                    DestinationAirportCode = "GOH",
+                    MinPrice = 50,
+                    DepartDate = DateTime.Now,
+                    ReturnDate = DateTime.Now
                 }
             };
 

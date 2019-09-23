@@ -48,7 +48,7 @@ namespace Tringo.WebApp.Controllers
                 reqData.DepartYear = inputData.Dates.MonthIdx < DateTime.Now.Month
                         ? DateTime.Now.Year + 1
                         : DateTime.Now.Year;
-                reqData.DepartMonth = inputData.Dates.MonthIdx;
+                reqData.DepartMonth = inputData.Dates.MonthIdx + 1;
             }
 
             var allAirports = _airportsService.GetAirports();
@@ -58,16 +58,16 @@ namespace Tringo.WebApp.Controllers
             var airportsIatas = relatedAirports.Select(a => a.IataCode);
             reqData.DestinationAirportCodes = airportsIatas;
 
-            var filteredFlights = await _flightsService.GetFlights(reqData);
+            var filteredFlights = (await _flightsService.GetFlights(reqData)).ToList();
 
             // Map filtered flights to response
             var repsData = filteredFlights.Select(f =>
             {
-                var destinationAirport = relatedAirports.First(a => a.IataCode == f.To);
+                var destinationAirport = relatedAirports.First(a => a.IataCode == f.DestinationAirportCode);
                 var priorityIdx = FindPriorityIdx(relatedAirports, destinationAirport);
                 return new FlightDestinationResponse
                 {
-                    Price = f.LowestPrice * inputData.NumberOfPeople,
+                    Price = f.MinPrice * inputData.NumberOfPeople,
                     DestAirportCode = destinationAirport.IataCode,
                     CityName = destinationAirport.RelatedCityName,
                     Lat = destinationAirport.Lat,
@@ -75,8 +75,8 @@ namespace Tringo.WebApp.Controllers
                     PersonalPriorityIdx = priorityIdx,
                     FlightDates = new FlightDates
                     {
-                        DepartureDate = f.DateDeparture.Date,
-                        ReturnDate = f.DateBack.Date
+                        DepartureDate = f.DepartDate.Date,
+                        ReturnDate = f.ReturnDate.Date
                     }
                 };
             }).ToList();
@@ -107,13 +107,13 @@ namespace Tringo.WebApp.Controllers
 
 			// Filtering:
 			// Filter by flights to airports within requested area
-			var filteredFlights = allFlights.Where(f => airportsIatas.Contains(f.To)).ToList();
+			var filteredFlights = allFlights.Where(f => airportsIatas.Contains(f.DestinationAirportCode)).ToList();
 
             // Filter by Budget
 			if (inputData.Budget != null)
 			{
 				filteredFlights = filteredFlights.Where(f =>
-					inputData.Budget.Min < f.LowestPrice && f.LowestPrice < inputData.Budget.Max).ToList();
+					inputData.Budget.Min < f.MinPrice && f.MinPrice < inputData.Budget.Max).ToList();
 			}
 
             // Filter by Dates
@@ -129,11 +129,11 @@ namespace Tringo.WebApp.Controllers
 			// Map filtered flights to response
 			var repsData = filteredFlights.Select(f =>
             {
-                var destinationAirport = relatedAirports.First(a => a.IataCode == f.To);
+                var destinationAirport = relatedAirports.First(a => a.IataCode == f.DestinationAirportCode);
                 var priorityIdx = FindPriorityIdx(relatedAirports, destinationAirport);
                 return new FlightDestinationResponse
                 {
-                    Price = f.LowestPrice * inputData.NumberOfPeople,
+                    Price = f.MinPrice * inputData.NumberOfPeople,
                     DestAirportCode = destinationAirport.IataCode,
 					CityName = destinationAirport.RelatedCityName,
                     Lat = destinationAirport.Lat,
@@ -141,8 +141,8 @@ namespace Tringo.WebApp.Controllers
 					PersonalPriorityIdx = priorityIdx,
 					FlightDates = new FlightDates
 					{
-                        DepartureDate = f.DateDeparture.Date,
-                        ReturnDate = f.DateBack.Date
+                        DepartureDate = f.DepartDate.Date,
+                        ReturnDate = f.ReturnDate.Date
                     }
                 };
             }).ToList();

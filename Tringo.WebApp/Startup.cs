@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.AzureAppServices;
 using Newtonsoft.Json;
 using System;
+using System.Net.Http.Headers;
 using Tringo.FlightsService;
 using Tringo.FlightsService.Impls;
 using Tringo.WebApp.HealthChecks;
@@ -78,7 +79,10 @@ namespace Tringo.WebApp
             services.AddHttpClient("webjet", c =>
             {
                 c.BaseAddress = new Uri(@"https://services.webjet.com.au/");
-                //c.DefaultRequestHeaders.Add("Accept", "");
+                c.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Basic",
+                    Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(
+                        string.Format("{0}:{1}", "mc", ""))));
             })
                 //.SetHandlerLifetime(TimeSpan.FromMinutes(1))  //Set lifetime
                 .AddWjPolicyBuilder();

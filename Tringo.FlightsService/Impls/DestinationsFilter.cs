@@ -47,9 +47,9 @@ namespace Tringo.FlightsService.Impls
                         : DateTime.Now.Year;
 
                 flights = flights.Where(f =>
-                    f.DateDeparture.Year == year && f.DateBack.Year == year
-                    && f.DateDeparture.Month == dates.MonthIdx
-                    && f.DateBack.Month == dates.MonthIdx);
+                    f.DepartDate.Year == year && f.ReturnDate.Year == year
+                    && f.DepartDate.Month == dates.MonthIdx
+                    && f.ReturnDate.Month == dates.MonthIdx);
             }
             return flights;
         }
@@ -61,11 +61,11 @@ namespace Tringo.FlightsService.Impls
 			IEnumerable<ReturnFlightDestinationDto> sourceAirports)
 		{
 			var cheapestFlights = new List<ReturnFlightDestinationDto>();
-			foreach (var group in sourceAirports.GroupBy(flight =>new { flight.From, flight.To }))
+			foreach (var group in sourceAirports.GroupBy(flight =>new { flight.From, flight.DestinationAirportCode }))
 			{
 				var cheapestFlight = sourceAirports
-					.Where(f => f.From == group.Key.From && f.To == group.Key.To)
-					.OrderBy(f => f.LowestPrice).ElementAt(0);
+					.Where(f => f.From == group.Key.From && f.DestinationAirportCode == group.Key.DestinationAirportCode)
+					.OrderBy(f => f.MinPrice).ElementAt(0);
 				cheapestFlights.Add(cheapestFlight);
 			}
 			return cheapestFlights;
