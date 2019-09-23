@@ -67,10 +67,10 @@ namespace Tringo.FlightsService.Impls
                     flightsList.Add(new ReturnFlightDestinationDto
 					{
                         From = airportFromCode,
-                        To = to,
-						DateDeparture = departureDate.Date,
-						DateBack = returnDate.Date,
-                        LowestPrice = random.Next(100, 1500)
+                        DestinationAirportCode = to,
+						DepartDate = departureDate.Date,
+						ReturnDate = returnDate.Date,
+                        MinPrice = random.Next(100, 1500)
                     });
                 }
 				storedFlights.Add(flightsFileName, flightsList);
@@ -98,9 +98,9 @@ namespace Tringo.FlightsService.Impls
             var randomDateDep = new DateTime(2019, random.Next(10, 11), random.Next(1, 30));
             var randomDateReturn = new DateTime(2019, random.Next(10, 11), random.Next(1, 30));
             while (randomDateDep.Date >= randomDateReturn.Date
-				|| flightsList.Any(f => f.From == from && f.To == to
-                && randomDateDep.Date == f.DateDeparture.Date
-				&& randomDateReturn.Date == f.DateBack.Date))
+				|| flightsList.Any(f => f.From == from && f.DestinationAirportCode == to
+                && randomDateDep.Date == f.DepartDate.Date
+				&& randomDateReturn.Date == f.ReturnDate.Date))
             {
                 if (randomDateDep.Date < randomDateReturn.Date && counter++ > 100)
                 {
