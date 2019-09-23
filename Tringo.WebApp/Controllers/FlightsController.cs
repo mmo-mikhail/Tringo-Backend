@@ -55,7 +55,7 @@ namespace Tringo.WebApp.Controllers
             var relatedAirports = _destinationsFilter
                 .FilterAirports(allAirports, inputData.SearchArea)
                 .ToList();
-            var airportsIatas = relatedAirports.Select(a => a.IataCode).Take(100);
+            var airportsIatas = relatedAirports.Select(a => a.IataCode);
             reqData.DestinationAirportCodes = airportsIatas;
 
             var filteredFlights = (await _flightsService.GetFlights(reqData)).ToList();
