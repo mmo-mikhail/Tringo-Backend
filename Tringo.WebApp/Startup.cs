@@ -27,7 +27,7 @@ namespace Tringo.WebApp
         public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
-            _corsPolicyOrigins = configuration.GetSection("CorsPolicyOrigins:AllowedOrigins").Get<string[]>();
+            _corsPolicyOrigins = Configuration.GetSection("CorsPolicyOrigins:AllowedOrigins").Get<string[]>();
             _logger = logger;
         }
 
@@ -58,7 +58,7 @@ namespace Tringo.WebApp
 
             services.AddSingleton<IAirportsService, AirportsService>();
             services.AddSingleton<IDestinationsFilter, DestinationsFilter>();
-            services.AddTransient<IFlightsService, MockFlightsService>(); // use WJFlightsService instead when ready
+            services.AddTransient<IFlightsService, WJFlightsService>(); // use WJFlightsService instead when ready
 
             //Health Checks
             services.AddHealthChecks()
@@ -78,11 +78,11 @@ namespace Tringo.WebApp
             // Configure WebJet http client
             services.AddHttpClient("webjet", c =>
             {
-                c.BaseAddress = new Uri(@"https://services.webjet.com.au/");
+                c.BaseAddress = new Uri(Configuration["deal_finder:url"]);
                 c.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Basic",
-                    Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(
-                        string.Format("{0}:{1}", "mc", ""))));
+                    Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(
+                        $"mapclient:{Configuration["mapclient"]}")));
             })
                 //.SetHandlerLifetime(TimeSpan.FromMinutes(1))  //Set lifetime
                 .AddWjPolicyBuilder();
