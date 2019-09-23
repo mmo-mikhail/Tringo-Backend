@@ -48,7 +48,7 @@ namespace Tringo.WebApp.Controllers
                 reqData.DepartYear = inputData.Dates.MonthIdx < DateTime.Now.Month
                         ? DateTime.Now.Year + 1
                         : DateTime.Now.Year;
-                reqData.DepartMonth = inputData.Dates.MonthIdx;
+                reqData.DepartMonth = inputData.Dates.MonthIdx + 1;
             }
 
             var allAirports = _airportsService.GetAirports();
