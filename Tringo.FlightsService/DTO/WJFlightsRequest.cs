@@ -32,6 +32,6 @@ namespace Tringo.FlightsService.DTO
         /// <summary>
         /// Maximum price limit – Optional
         /// </summary>
-        public int? MaxPriceLimit { get; set; }
+        public int? MaxPrice { get; set; }
     }
 }

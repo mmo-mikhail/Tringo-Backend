@@ -40,7 +40,7 @@ namespace Tringo.WebApp.Controllers
             var reqData = new WJFlightsRequest
             {
                 DepartureAirportCode = inputData.DepartureAirportId,
-                MaxPriceLimit = inputData.Budget?.Max,
+                MaxPrice = inputData.Budget?.Max,
                 TravelClass = "Economy"
             };
             if (inputData.Dates.MonthIdx != -1)
