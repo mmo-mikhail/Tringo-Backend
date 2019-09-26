@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,9 +25,12 @@ namespace Tringo.WebApp.HealthChecks
             var healthCheckResultHealthy =
                 _airportsService.GetAirports().Any()
                 && (await _flightsService.GetFlights(
-                    new FlightsService.DTO.WJFlightsRequest { DepartureAirportCode = "MEL" })).Any()
-                && (await _flightsService.GetFlights(
-                    new FlightsService.DTO.WJFlightsRequest { DepartureAirportCode = "SYD" })).Any();
+                    new FlightsService.DTO.WJFlightsRequest
+                    {
+                        DepartureAirportCode = "MEL",
+                        DestinationAirportCodes = new List<string> { "SYD" },
+                        TravelClass = "Economy"
+                    })).Any();
 
             if (healthCheckResultHealthy)
             {
