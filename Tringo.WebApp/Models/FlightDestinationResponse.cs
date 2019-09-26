@@ -39,7 +39,7 @@ namespace Tringo.WebApp.Models
 		/// Shows how importnat the flight destination for the user
 		/// Higher number indicates higher priority
 		/// </summary>
-		public int PersonalPriorityIdx { get; set; }
+		public double PersonalPriorityIdx { get; set; }
 
         [JsonIgnore]
         public const int LowestPriorityIdx = 0;

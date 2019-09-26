@@ -6,5 +6,7 @@ namespace Tringo.FlightsService
     public interface IAirportsService
     {
         IEnumerable<AirportDto> GetAirports();
+
+        IList<string> GetTop200Airports();
     }
 }

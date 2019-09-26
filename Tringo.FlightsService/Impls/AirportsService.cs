@@ -10,6 +10,15 @@ namespace Tringo.FlightsService.Impls
     {
         private static IEnumerable<AirportDto> storedAirports;
 
+        private IList<string> top200Airports;
+
+        public IList<string> GetTop200Airports()
+        {
+            if (top200Airports == null)
+                top200Airports = File.ReadAllLines("MockFiles/top200_airports.txt");
+            return top200Airports;
+        }
+
         public IEnumerable<AirportDto> GetAirports()
         {
             if (storedAirports != null)
@@ -22,6 +31,7 @@ namespace Tringo.FlightsService.Impls
             var airports = JsonConvert.DeserializeObject<IEnumerable<AirportsData>>(airportsPassangers).ToList();
             var airportsNames = JsonConvert.DeserializeObject<AirportNamesWJModels>(airportsNamesWJ).AirportCityInfo;
 
+            var top200 = GetTop200Airports();
             foreach (var line in lines)
             {
                 if (string.IsNullOrWhiteSpace(line))
@@ -32,8 +42,8 @@ namespace Tringo.FlightsService.Impls
                     continue;
 
                 var type = values[0];
-                if (type != "large_airport")
-                    //if (type != "medium_airport" && type != "large_airport") // Exclude Medium airports for MVP
+                //if (type != "large_airport")
+                if (type != "medium_airport" && type != "large_airport") // Exclude Medium airports for MVP
                     continue;
 
                 var iataCode = values[2];
@@ -42,6 +52,10 @@ namespace Tringo.FlightsService.Impls
 
                 var airportNameData = airportsNames.FirstOrDefault(n => n.TSAAirportCode == iataCode);
                 if (airportNameData == null)
+                {
+                    continue;
+                }
+                if (!top200.Contains(iataCode))
                 {
                     continue;
                 }
