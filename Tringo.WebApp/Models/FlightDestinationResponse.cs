@@ -21,9 +21,14 @@ namespace Tringo.WebApp.Models
         public double Price { get; set; }
 
         /// <summary>
-        /// City or Airport title
+        /// City title
         /// </summary>
         public string CityName { get; set; }
+
+        /// <summary>
+        /// Optional Airport title
+        /// </summary>
+        public string AirportName { get; set; }
 
         /// <summary>
         /// Destination Airport IATA Code

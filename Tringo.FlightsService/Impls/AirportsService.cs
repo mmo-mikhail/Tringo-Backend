@@ -67,7 +67,7 @@ namespace Tringo.FlightsService.Impls
                 var airportsData = airports.FirstOrDefault(a => a.IATACode == iataCode);
                 results.Add(new AirportDto
                 {
-                    AirportName = values[1],
+                    AirportName = airportNameData.AirportName,
                     RelatedCityName = airportNameData.CityName,
                     IataCode = iataCode,
                     Lat = double.Parse(lat),
