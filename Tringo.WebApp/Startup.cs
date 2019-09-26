@@ -56,6 +56,7 @@ namespace Tringo.WebApp
                 }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
 
+            services.AddSingleton<ISimpleMemoryCacher, SimpleMemoryCacher>();
             services.AddSingleton<IAirportsService, AirportsService>();
             services.AddSingleton<IDestinationsFilter, DestinationsFilter>();
             services.AddTransient<IFlightsService, WJFlightsService>(); // use WJFlightsService instead when ready

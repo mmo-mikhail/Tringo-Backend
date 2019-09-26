@@ -55,8 +55,7 @@ namespace Tringo.WebApp.Controllers
             var relatedAirports = _destinationsFilter
                 .FilterAirports(allAirports, inputData.SearchArea)
                 .ToList();
-            var airportsIatas = relatedAirports.Select(a => a.IataCode);
-            reqData.DestinationAirportCodes = airportsIatas;
+            reqData.DestinationAirportCodes = relatedAirports.Select(a => a.IataCode);
 
             var filteredFlights = (await _flightsService.GetFlights(reqData)).ToList();
 
@@ -149,22 +148,30 @@ namespace Tringo.WebApp.Controllers
             return repsData.Count > 0 ? Ok(repsData) : NoContent() as ActionResult;
         }
 
-        private int FindPriorityIdx(List<AirportDto> relatedAirports, AirportDto destinationAirport)
+        private double FindPriorityIdx(List<AirportDto> relatedAirports, AirportDto destinationAirport)
         {
+            var top200 = _airportsService.GetTop200Airports();
+            var top200Idx = top200.IndexOf(destinationAirport.IataCode);
+            if (top200Idx != -1)
+            {
+                return FlightDestinationResponse.MaxPriorityIdx + (top200.Count - top200Idx);
+            }
+
             if (destinationAirport.NumberOfPassengers == default)
             {
                 return -1;
             }
             var allValues = relatedAirports.Where(a => a.NumberOfPassengers != default).Select(a => a.NumberOfPassengers);
             var minValue = allValues.Min();
-            var localPercentage = 100.0 * (destinationAirport.NumberOfPassengers - minValue) / allValues.Max() - minValue;
+            // Find percentage between min-max number of passengers
+            var localPercentage = 100.0 * (destinationAirport.NumberOfPassengers - minValue) / (allValues.Max() - minValue);
 
             var min = FlightDestinationResponse.LowestPriorityIdx;
             var max = FlightDestinationResponse.MaxPriorityIdx;
 
+            // Find priority between max-min allowed values based on found percentage
             var priority = (localPercentage * (max - min) / 100.0) - min;
-
-            return (int)Math.Round(priority);
+            return priority;
         }
     }
 }
