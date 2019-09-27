@@ -35,7 +35,7 @@ namespace Tringo.WebApp.Controllers
         /// </summary>
         [HttpPost]
         public async Task<ActionResult<IEnumerable<FlightDestinationResponse>>> GetLowestPrices(
-            [FromBody]FlightDestinationRequest inputData)
+            [FromBody]FlightDestinationRequest inputData, [FromQuery]bool onlyPriceGuarantee = false)
         {
             var reqData = new WJFlightsRequest
             {
@@ -51,12 +51,14 @@ namespace Tringo.WebApp.Controllers
                 reqData.DepartMonth = inputData.Dates.MonthIdx + 1;
             }
 
-            var allAirports = _airportsService.GetAirports();
+            var allAirports = onlyPriceGuarantee
+                ? _airportsService.GetPriceGuaranteeAirports()
+                : _airportsService.GetPriceGuaranteeAirports().Concat(_airportsService.GetOtherAirports());
             var relatedAirports = _destinationsFilter
                 .FilterAirports(allAirports, inputData.SearchArea)
                 .ToList();
-            reqData.DestinationAirportCodes = relatedAirports.Select(a => a.IataCode);
-
+            reqData.DestinationAirportCodes = relatedAirports.Select(a => a.IataCode).Distinct();
+            _flightsService.OnlyPriceGuarantee = onlyPriceGuarantee;
             var filteredFlights = (await _flightsService.GetFlights(reqData)).ToList();
 
             // Map filtered flights to response
@@ -96,7 +98,7 @@ namespace Tringo.WebApp.Controllers
             // Find related flights
             var allFlights = await _flightsService.GetFlights(
                 new WJFlightsRequest { DepartureAirportCode = inputData.DepartureAirportId });
-            var allAirports = _airportsService.GetAirports();
+            var allAirports = _airportsService.GetPriceGuaranteeAirports();
             var relatedAirports = _destinationsFilter
                 .FilterAirports(allAirports, inputData.SearchArea)
                 .ToList();
@@ -151,11 +153,11 @@ namespace Tringo.WebApp.Controllers
 
         private double FindPriorityIdx(List<AirportDto> relatedAirports, AirportDto destinationAirport)
         {
-            var top200 = _airportsService.GetTop200Airports();
-            var top200Idx = top200.IndexOf(destinationAirport.IataCode);
+            var popularAirports = _airportsService.GetPriceGuaranteeAirportCodes();
+            var top200Idx = popularAirports.IndexOf(destinationAirport.IataCode);
             if (top200Idx != -1)
             {
-                return FlightDestinationResponse.MaxPriorityIdx + (top200.Count - top200Idx);
+                return FlightDestinationResponse.MaxPriorityIdx + (popularAirports.Count - top200Idx);
             }
 
             if (destinationAirport.NumberOfPassengers == default)

@@ -68,7 +68,7 @@ namespace Tringo.WebApp.Tests
                 }
             };
             flightsService.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
-            airportsService.Setup(_ => _.GetAirports()).Returns(airports);
+            airportsService.Setup(_ => _.GetPriceGuaranteeAirports()).Returns(airports);
 
             // Act
             var result = flightsController.GetDestinationPrices(request).Result;
@@ -125,7 +125,7 @@ namespace Tringo.WebApp.Tests
             };
 
             flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
-            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
+            airportsService.Setup(fs => fs.GetPriceGuaranteeAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
@@ -189,7 +189,7 @@ namespace Tringo.WebApp.Tests
             };
 
             flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
-            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
+            airportsService.Setup(fs => fs.GetPriceGuaranteeAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
@@ -256,7 +256,7 @@ namespace Tringo.WebApp.Tests
             };
 
             flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
-            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
+            airportsService.Setup(fs => fs.GetPriceGuaranteeAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
@@ -322,7 +322,7 @@ namespace Tringo.WebApp.Tests
             };
 
             flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
-            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
+            airportsService.Setup(fs => fs.GetPriceGuaranteeAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
@@ -394,7 +394,7 @@ namespace Tringo.WebApp.Tests
             };
 
             flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
-            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
+            airportsService.Setup(fs => fs.GetPriceGuaranteeAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
@@ -464,7 +464,7 @@ namespace Tringo.WebApp.Tests
             };
 
             flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
-            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
+            airportsService.Setup(fs => fs.GetPriceGuaranteeAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock
@@ -535,7 +535,7 @@ namespace Tringo.WebApp.Tests
             };
 
             flightsServiceMock.Setup(_ => _.GetFlights(It.IsAny<WJFlightsRequest>())).ReturnsAsync(flights);
-            airportsService.Setup(fs => fs.GetAirports()).Returns(airports);
+            airportsService.Setup(fs => fs.GetPriceGuaranteeAirports()).Returns(airports);
             destinationsFilterMock.Setup(df => df.FilterAirports(It.IsAny<List<AirportDto>>(), It.IsAny<SearchArea>()))
                 .Returns(airports);
             destinationsFilterMock

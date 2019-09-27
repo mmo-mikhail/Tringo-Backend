@@ -8,21 +8,40 @@ namespace Tringo.FlightsService.Impls
 {
     public class AirportsService : IAirportsService
     {
-        private static IEnumerable<AirportDto> storedAirports;
+        private static IEnumerable<AirportDto> _storedAirports;
+        private static IEnumerable<AirportDto> _storedOtherAirports;
 
-        private IList<string> top200Airports;
+        private IList<string> _priceGuaranteeAirportCodes;
 
-        public IList<string> GetTop200Airports()
+        public IList<string> GetPriceGuaranteeAirportCodes()
         {
-            if (top200Airports == null)
-                top200Airports = File.ReadAllLines("MockFiles/top200_airports.txt");
-            return top200Airports;
+            if (_priceGuaranteeAirportCodes == null)
+                _priceGuaranteeAirportCodes = File.ReadAllLines("MockFiles/top200_airports.txt");
+            return _priceGuaranteeAirportCodes;
         }
 
-        public IEnumerable<AirportDto> GetAirports()
+        public IEnumerable<AirportDto> GetPriceGuaranteeAirports()
         {
-            if (storedAirports != null)
-                return storedAirports;
+            return GetAirports(true);
+        }
+
+        public IEnumerable<AirportDto> GetOtherAirports()
+        {
+            return GetAirports(false);
+        }
+
+        private IEnumerable<AirportDto> GetAirports(bool priceGuaranteeOnly)
+        {
+            if (priceGuaranteeOnly)
+            {
+                if (_storedAirports != null)
+                    return _storedAirports;
+            }
+            else
+            {
+                if (_storedOtherAirports != null)
+                    return _storedOtherAirports;
+            }
 
             var results = new List<AirportDto>();
             var lines = File.ReadAllLines("MockFiles/airports.txt");
@@ -31,7 +50,7 @@ namespace Tringo.FlightsService.Impls
             var airports = JsonConvert.DeserializeObject<IEnumerable<AirportsData>>(airportsPassangers).ToList();
             var airportsNames = JsonConvert.DeserializeObject<AirportNamesWJModels>(airportsNamesWJ).AirportCityInfo;
 
-            var top200 = GetTop200Airports();
+            var priceGuaranteeCodes = GetPriceGuaranteeAirportCodes();
             foreach (var line in lines)
             {
                 if (string.IsNullOrWhiteSpace(line))
@@ -42,9 +61,16 @@ namespace Tringo.FlightsService.Impls
                     continue;
 
                 var type = values[0];
-                //if (type != "large_airport")
-                if (type != "medium_airport" && type != "large_airport") // Exclude Medium airports for MVP
-                    continue;
+                if (priceGuaranteeOnly)
+                {
+                    if (type != "medium_airport" && type != "large_airport")
+                        continue;
+                }
+                else
+                {
+                    if (type != "large_airport")
+                        continue;
+                }
 
                 var iataCode = values[2];
                 if (string.IsNullOrWhiteSpace(iataCode))
@@ -55,7 +81,7 @@ namespace Tringo.FlightsService.Impls
                 {
                     continue;
                 }
-                if (!top200.Contains(iataCode))
+                if (priceGuaranteeOnly && !priceGuaranteeCodes.Contains(iataCode))
                 {
                     continue;
                 }
@@ -76,7 +102,10 @@ namespace Tringo.FlightsService.Impls
                 });
             }
             //results = results.OrderByDescending(a => a.NumberOfPassengers).Take(200).ToList();
-            storedAirports = results;
+            if (priceGuaranteeOnly)
+                _storedAirports = results;
+            else
+                _storedOtherAirports = results;
             return results;
         }
     }

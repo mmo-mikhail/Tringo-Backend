@@ -45,7 +45,7 @@ namespace Tringo.WebApp.Tests
                 new AirportDto(){ IataCode = "SYD" },
                 new AirportDto(){ IataCode = "MEL" }
             };
-            airportsService.Setup(_ => _.GetAirports()).Returns(airports);
+            airportsService.Setup(_ => _.GetPriceGuaranteeAirports()).Returns(airports);
 
             // Act
             var result = airportsController.GetAirportCoordinates(airportCode);
@@ -72,7 +72,7 @@ namespace Tringo.WebApp.Tests
                 new AirportDto(){ IataCode = "SYD", Lat = expectedLat, Lng = expectedLng },
                 new AirportDto(){ IataCode = "MEL" }
             };
-            airportsService.Setup(_ => _.GetAirports()).Returns(airports);
+            airportsService.Setup(_ => _.GetPriceGuaranteeAirports()).Returns(airports);
 
             // Act
             var result = airportsController.GetAirportCoordinates(airportCode);
