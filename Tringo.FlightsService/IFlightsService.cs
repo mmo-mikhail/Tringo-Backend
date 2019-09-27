@@ -6,6 +6,8 @@ namespace Tringo.FlightsService
 {
     public interface IFlightsService
     {
+        bool OnlyPriceGuarantee { get; set; }
+
         Task<IEnumerable<ReturnFlightDestinationDto>> GetFlights(WJFlightsRequest WJFlightsRequest);
     }
 }

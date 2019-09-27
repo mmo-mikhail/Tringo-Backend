@@ -23,7 +23,7 @@ namespace Tringo.WebApp.HealthChecks
             CancellationToken cancellationToken = default)
         {
             var healthCheckResultHealthy =
-                _airportsService.GetAirports().Any()
+                _airportsService.GetPriceGuaranteeAirports().Any()
                 && (await _flightsService.GetFlights(
                     new FlightsService.DTO.WJFlightsRequest
                     {

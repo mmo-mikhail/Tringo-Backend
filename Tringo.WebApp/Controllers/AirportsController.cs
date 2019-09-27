@@ -22,7 +22,7 @@ namespace Tringo.WebApp.Controllers
             if (string.IsNullOrWhiteSpace(airportCode))
                 return new BadRequestResult();
 
-            var airport = _airportsService.GetAirports()
+            var airport = _airportsService.GetPriceGuaranteeAirports()
                 .FirstOrDefault(a => a.IataCode == airportCode.ToUpperInvariant());
             return airport != null
                 ? Ok(new Coordinates(airport.Lat, airport.Lng))

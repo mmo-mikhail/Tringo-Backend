@@ -16,6 +16,8 @@ namespace Tringo.FlightsService.Impls
 		private static object flightsLock= new object();
         private readonly IAirportsService _airportsService;
 
+        public bool OnlyPriceGuarantee { get; set; }
+
         public MockFlightsService(IAirportsService airportsService)
         {
             _airportsService = airportsService;
@@ -47,7 +49,7 @@ namespace Tringo.FlightsService.Impls
             {
                 using (File.Create(flightsFileName)) { }
 
-				var airports = _airportsService.GetAirports().ToList();
+				var airports = _airportsService.GetPriceGuaranteeAirports().ToList();
                 var flightsList = new List<ReturnFlightDestinationDto>();
                 var random = new Random();
                 var percentRandom = new Random();
