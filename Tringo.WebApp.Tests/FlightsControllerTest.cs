@@ -376,8 +376,8 @@ namespace Tringo.WebApp.Tests
                 {
                     DestinationAirportCode = "MEL",
                     MinPrice = 50,
-                    DepartDate = DateTime.Now,
-                    ReturnDate = DateTime.Now
+                    DepartDate = DateTime.Now.AddMonths(1),
+                    ReturnDate = DateTime.Now.AddMonths(2)
                 }
             };
 
