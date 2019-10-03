@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Tringo.FlightsService;
 using Tringo.FlightsService.DTO;
@@ -15,16 +16,19 @@ namespace Tringo.WebApp.Controllers
     public class FlightsController : ControllerBase
     {
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
         private readonly IFlightsService _flightsService;
         private readonly IAirportsService _airportsService;
         private readonly IDestinationsFilter _destinationsFilter;
 
         public FlightsController(ILoggerFactory logger,
+            IConfiguration configuration,
             IFlightsService flightsService,
             IAirportsService airportsService,
             IDestinationsFilter destinationsFilter)
         {
             _logger = logger.CreateLogger(GetType());
+            _configuration = configuration;
             _flightsService = flightsService;
             _airportsService = airportsService;
             _destinationsFilter = destinationsFilter;
@@ -35,7 +39,7 @@ namespace Tringo.WebApp.Controllers
         /// </summary>
         [HttpPost]
         public async Task<ActionResult<IEnumerable<FlightDestinationResponse>>> GetLowestPrices(
-            [FromBody]FlightDestinationRequest inputData, [FromQuery]bool onlyPriceGuarantee = false)
+            [FromBody]FlightDestinationRequest inputData)
         {
             var reqData = new WJFlightsRequest
             {
@@ -51,6 +55,10 @@ namespace Tringo.WebApp.Controllers
                 reqData.DepartMonth = inputData.Dates.MonthIdx + 1;
             }
 
+            if (!bool.TryParse(_configuration["OnlyPriceGuarantee"], out bool onlyPriceGuarantee))
+            {
+                onlyPriceGuarantee = true;
+            }
             var allAirports = onlyPriceGuarantee
                 ? _airportsService.GetPriceGuaranteeAirports()
                 : _airportsService.GetPriceGuaranteeAirports().Concat(_airportsService.GetOtherAirports());
