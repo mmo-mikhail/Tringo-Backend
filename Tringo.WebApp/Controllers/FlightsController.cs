@@ -38,6 +38,28 @@ namespace Tringo.WebApp.Controllers
         /// Designed to operate with real WebJet API
         /// </summary>
         [HttpPost]
+        public async Task<ActionResult<IEnumerable<FlightDestinationResponse>>> GetAllLowestPrices(
+            [FromBody]BaseFlightDestinationRequest inputData)
+        {
+            var departYear = inputData.Dates.MonthIdx != -1 
+                ? inputData.Dates.MonthIdx < DateTime.Now.Month
+                    ? DateTime.Now.Year + 1
+                    : DateTime.Now.Year
+                : (int?)null;
+            var departMonth = inputData.Dates.MonthIdx != -1 ? inputData.Dates.MonthIdx + 1 : (int?)null;
+
+            var allAirports = _airportsService.GetPriceGuaranteeAirports().ToList();
+            var allFlights = (await _flightsService.GetAllFlights(inputData.DepartureAirportId, departYear, departMonth)).ToList();
+
+            // Map filtered flights to response
+            var repsData = MapToResponse(allFlights, allAirports, inputData.NumberOfPeople);
+            return repsData.Count > 0 ? Ok(repsData) : NoContent() as ActionResult;
+        }
+
+        /// <summary>
+        /// Designed to operate with real WebJet API
+        /// </summary>
+        [HttpPost]
         public async Task<ActionResult<IEnumerable<FlightDestinationResponse>>> GetLowestPrices(
             [FromBody]FlightDestinationRequest inputData)
         {
@@ -70,26 +92,7 @@ namespace Tringo.WebApp.Controllers
             var filteredFlights = (await _flightsService.GetFlights(reqData)).ToList();
 
             // Map filtered flights to response
-            var repsData = filteredFlights.Select(f =>
-            {
-                var destinationAirport = relatedAirports.First(a => a.IataCode == f.DestinationAirportCode);
-                var priorityIdx = FindPriorityIdx(relatedAirports, destinationAirport);
-                return new FlightDestinationResponse
-                {
-                    Price = f.MinPrice * inputData.NumberOfPeople,
-                    DestAirportCode = destinationAirport.IataCode,
-                    CityName = destinationAirport.RelatedCityName,
-                    AirportName = destinationAirport.AirportName,
-                    Lat = destinationAirport.Lat,
-                    Lng = destinationAirport.Lng,
-                    PersonalPriorityIdx = priorityIdx,
-                    FlightDates = new FlightDates
-                    {
-                        DepartureDate = f.DepartDate.Date,
-                        ReturnDate = f.ReturnDate.Date
-                    }
-                };
-            }).ToList();
+            var repsData = MapToResponse(filteredFlights, relatedAirports, inputData.NumberOfPeople);
             return repsData.Count > 0 ? Ok(repsData) : NoContent() as ActionResult;
         }
 
@@ -136,30 +139,37 @@ namespace Tringo.WebApp.Controllers
 			// so need to select only MIN price for all same destinations
 			filteredFlights = _destinationsFilter.FilterLowestPriceOnly(filteredFlights).ToList();
 
-			// Map filtered flights to response
-			var repsData = filteredFlights.Select(f =>
+            // Map filtered flights to response
+            var repsData = MapToResponse(filteredFlights, relatedAirports, inputData.NumberOfPeople);
+            return repsData.Count > 0 ? Ok(repsData) : NoContent() as ActionResult;
+        }
+
+        private IList<FlightDestinationResponse> MapToResponse(IList<ReturnFlightDestinationDto> fligths, IList<AirportDto> relatedAirports, int numberOfPeople)
+        {
+            return fligths.Select(f =>
             {
                 var destinationAirport = relatedAirports.First(a => a.IataCode == f.DestinationAirportCode);
                 var priorityIdx = FindPriorityIdx(relatedAirports, destinationAirport);
                 return new FlightDestinationResponse
                 {
-                    Price = f.MinPrice * inputData.NumberOfPeople,
+                    Price = f.MinPrice * numberOfPeople,
                     DestAirportCode = destinationAirport.IataCode,
-					CityName = destinationAirport.RelatedCityName,
+                    CityName = destinationAirport.RelatedCityName.Trim(),
+                    AirportName = destinationAirport.AirportName?.Trim(),
                     Lat = destinationAirport.Lat,
                     Lng = destinationAirport.Lng,
-					PersonalPriorityIdx = priorityIdx,
-					FlightDates = new FlightDates
-					{
+                    PersonalPriorityIdx = priorityIdx,
+                    FlightDates = new FlightDates
+                    {
                         DepartureDate = f.DepartDate.Date,
                         ReturnDate = f.ReturnDate.Date
                     }
                 };
             }).ToList();
-            return repsData.Count > 0 ? Ok(repsData) : NoContent() as ActionResult;
         }
 
-        private double FindPriorityIdx(List<AirportDto> relatedAirports, AirportDto destinationAirport)
+
+        private double FindPriorityIdx(IList<AirportDto> relatedAirports, AirportDto destinationAirport)
         {
             var popularAirports = _airportsService.GetPriceGuaranteeAirportCodes();
             var top200Idx = popularAirports.IndexOf(destinationAirport.IataCode);

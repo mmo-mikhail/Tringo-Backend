@@ -27,7 +27,27 @@ namespace Tringo.FlightsService.Impls
 
         public bool OnlyPriceGuarantee { get; set; }
 
-        public async Task<IEnumerable<ReturnFlightDestinationDto>> GetFlights(
+        public async Task<IEnumerable<ReturnFlightDestinationDto>> GetAllFlights(
+            string from, int? departYear, int? departMonth, string travelType = "Economy")
+        {
+            var priceGuaranteeCodes = _airportsService.GetPriceGuaranteeAirportCodes();
+            var newRequest = new WJFlightsRequest()
+            {
+                DepartureAirportCode = from,
+                DepartYear = departYear,
+                DepartMonth = departMonth,
+                TravelClass = travelType,
+                MaxPrice = null,
+                DestinationAirportCodes = priceGuaranteeCodes
+            };
+            var priceGuaranteeDestinations = await PerformGetFlights(newRequest);
+            return priceGuaranteeDestinations
+                .Select(f => { f.From = from; return f; }) // API doesn't return from
+                .ToList();
+        }
+
+
+            public async Task<IEnumerable<ReturnFlightDestinationDto>> GetFlights(
             WJFlightsRequest WJFlightsRequest)
         {
             var allFlights = await _memoryCacher.GetFromCacheAsync(
