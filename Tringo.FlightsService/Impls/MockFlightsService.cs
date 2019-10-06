@@ -118,5 +118,10 @@ namespace Tringo.FlightsService.Impls
 			returnDate = randomDateReturn;
 			return true;
         }
+
+        public Task<IEnumerable<ReturnFlightDestinationDto>> GetAllFlights(string from, int? departYear, int? departMonth, string travelType = "Economy")
+        {
+            throw new NotImplementedException();
+        }
     }
 }
