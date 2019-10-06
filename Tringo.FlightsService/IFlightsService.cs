@@ -6,7 +6,7 @@ namespace Tringo.FlightsService
 {
     public interface IFlightsService
     {
-        public Task<IEnumerable<ReturnFlightDestinationDto>> GetAllFlights(
+        Task<IEnumerable<ReturnFlightDestinationDto>> GetAllFlights(
             string from, int? departYear, int? departMonth, string travelType = "Economy");
 
         bool OnlyPriceGuarantee { get; set; }
