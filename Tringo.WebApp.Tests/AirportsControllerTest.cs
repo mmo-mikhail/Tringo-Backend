@@ -72,7 +72,7 @@ namespace Tringo.WebApp.Tests
                 new AirportDto(){ IataCode = "SYD", Lat = expectedLat, Lng = expectedLng },
                 new AirportDto(){ IataCode = "MEL" }
             };
-            airportsService.Setup(_ => _.GetPriceGuaranteeAirports()).Returns(airports);
+            airportsService.Setup(_ => _.GetAirport(It.IsAny<string>())).Returns(airports[0]);
 
             // Act
             var result = airportsController.GetAirportCoordinates(airportCode);

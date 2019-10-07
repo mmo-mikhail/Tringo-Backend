@@ -6195,8 +6195,7 @@
 			"CountryCode": "FR"
 		},
 		{
-			"TSAAirportCod
-e": "FNJ",
+			"TSAAirportCode": "FNJ",
 			"AirportName": "Pyongyang Intl",
 			"CityCode": "FNJ",
 			"CityName": "Pyongyang",
@@ -18617,9 +18616,7 @@ e": "FNJ",
 			"TSAAirportCode": "SWP",
 			"AirportName": "Swakopmund  ",
 			"CityCode": "SWP",
-			"CityName": "Swak
-
-opmund",
+			"CityName": "Swakopmund",
 			"CountryCode": "NA"
 		},
 		{

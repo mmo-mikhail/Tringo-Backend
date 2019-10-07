@@ -7,7 +7,7 @@ namespace Tringo.FlightsService
     {
         IEnumerable<AirportDto> GetPriceGuaranteeAirports();
         IEnumerable<AirportDto> GetOtherAirports();
-
+        AirportDto GetAirport(string airportCode);
         IList<string> GetPriceGuaranteeAirportCodes();
     }
 }
