@@ -19,12 +19,12 @@ namespace Tringo.WebApp.Controllers
         [HttpGet]
         public ActionResult<Coordinates> GetAirportCoordinates(string airportCode)
         {
-            if (string.IsNullOrWhiteSpace(airportCode))
+            if (string.IsNullOrWhiteSpace(airportCode) || airportCode.Length < 3)
                 return new BadRequestResult();
 
-            var airport = _airportsService.GetPriceGuaranteeAirports()
-                .FirstOrDefault(a => a.IataCode == airportCode.ToUpperInvariant());
-            return airport != null
+            var airport = _airportsService.GetAirport(airportCode.Substring(0,3));
+
+            return !string.IsNullOrEmpty(airport.IataCode)
                 ? Ok(new Coordinates(airport.Lat, airport.Lng))
                 : NoContent() as ActionResult;
         }

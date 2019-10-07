@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,6 +31,38 @@ namespace Tringo.FlightsService.Impls
             return GetAirports(false);
         }
 
+        public AirportDto GetAirport(string airportCode)
+        {
+            var results = new AirportDto();
+            var lines = File.ReadAllLines("MockFiles/airports.txt");
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                var values = line.Split('\t');
+                if (values.Length < 2)
+                    continue;
+
+                var type = values[0];
+                if (type != "medium_airport" && type != "large_airport")
+                        continue;
+
+                var iataCode = values[2];
+                if (string.IsNullOrWhiteSpace(iataCode))
+                    continue;
+
+                if (!iataCode.Equals(airportCode, StringComparison.InvariantCultureIgnoreCase)) continue;
+                var coords = values[3].Split(',');
+                var lng = coords[0].Replace("\"", "").Trim();
+                var lat = coords[1].Replace("\"", "").Trim();
+                results.IataCode = iataCode;
+                results.Lat = double.Parse(lat);
+                results.Lng = double.Parse(lng);
+                break;
+            }
+            return results;
+        }
         private IEnumerable<AirportDto> GetAirports(bool priceGuaranteeOnly)
         {
             if (priceGuaranteeOnly)
