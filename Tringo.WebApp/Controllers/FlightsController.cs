@@ -71,10 +71,10 @@ namespace Tringo.WebApp.Controllers
             };
             if (inputData.Dates.MonthIdx != -1)
             {
-                reqData.DepartYear = inputData.Dates.MonthIdx < DateTime.Now.Month
+                reqData.DepartMonth = inputData.Dates.MonthIdx + 1;
+                reqData.DepartYear = reqData.DepartMonth < DateTime.Now.Month
                         ? DateTime.Now.Year + 1
                         : DateTime.Now.Year;
-                reqData.DepartMonth = inputData.Dates.MonthIdx + 1;
             }
 
             if (!bool.TryParse(_configuration["OnlyPriceGuarantee"], out bool onlyPriceGuarantee))
