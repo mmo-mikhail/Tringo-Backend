@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.AzureAppServices;
 using Newtonsoft.Json;
 using System;
+using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using Tringo.FlightsService;
 using Tringo.FlightsService.Impls;
@@ -84,6 +86,12 @@ namespace Tringo.WebApp
                 new AuthenticationHeaderValue("Basic",
                     Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(
                         $"mapclient:{Configuration["mapclient"]}")));
+
+                c.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("compress"));
+                c.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+            }).ConfigurePrimaryHttpMessageHandler(config => new HttpClientHandler()
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.None
             })
                 //.SetHandlerLifetime(TimeSpan.FromMinutes(1))  //Set lifetime
                 .AddWjPolicyBuilder();
