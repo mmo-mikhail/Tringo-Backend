@@ -124,13 +124,12 @@ namespace Tringo.FlightsService.Impls
                 var json = JsonConvert.SerializeObject(WJFlightsRequest, new JsonSerializerSettings()
                 {
                     NullValueHandling = NullValueHandling.Ignore,
-                    Formatting = Formatting.Indented,
+                    Formatting = Formatting.None,
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
                 });
                 request.Content = new StringContent(json, Encoding.UTF8, "application/json");
                 request.Method = new HttpMethod("POST");
                 var client = _httpClientFactory.CreateClient("webjet");
-
                 var response = await client.SendAsync(request);
 
                 if (response.IsSuccessStatusCode)
