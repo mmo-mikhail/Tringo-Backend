@@ -120,7 +120,8 @@ namespace Tringo.WebApp.Tests
                     Lng = 104.71056084999998,
                     IataCode = "MEL",
                     AirportName = "Tullamarine",
-                    RelatedCityName = "Melbourne"
+                    RelatedCityName = "Melbourne",
+                    CountryName = "Australia"
                 }
             };
 
@@ -184,7 +185,8 @@ namespace Tringo.WebApp.Tests
                     Lng = 104.71056084999998,
                     IataCode = "MEL",
                     AirportName = "Tullamarine",
-                    RelatedCityName = "Melbourne"
+                    RelatedCityName = "Melbourne",
+                    CountryName = "Australia"
                 }
             };
 
@@ -251,7 +253,8 @@ namespace Tringo.WebApp.Tests
                     Lng = 104.71056084999998,
                     IataCode = "MEL",
                     AirportName = "Tullamarine",
-                    RelatedCityName = "Melbourne"
+                    RelatedCityName = "Melbourne",
+                    CountryName = "Australia"
                 }
             };
 
@@ -317,7 +320,8 @@ namespace Tringo.WebApp.Tests
                     Lng = 104.71056084999998,
                     IataCode = "MEL",
                     AirportName = "Tullamarine",
-                    RelatedCityName = "Melbourne"
+                    RelatedCityName = "Melbourne",
+                    CountryName = "Australia"
                 }
             };
 
@@ -389,7 +393,8 @@ namespace Tringo.WebApp.Tests
                     Lng = 104.71056084999998,
                     IataCode = "MEL",
                     AirportName = "Tullamarine",
-                    RelatedCityName = "Melbourne"
+                    RelatedCityName = "Melbourne",
+                    CountryName = "Australia"
                 }
             };
 
@@ -459,7 +464,8 @@ namespace Tringo.WebApp.Tests
                     Lng = 104.71056084999998,
                     IataCode = "MEL",
                     AirportName = "Tullamarine",
-                    RelatedCityName = "Melbourne"
+                    RelatedCityName = "Melbourne",
+                    CountryName = "Australia"
                 }
             };
 
@@ -529,7 +535,8 @@ namespace Tringo.WebApp.Tests
                     Lng = -51.673497306,
                     IataCode = "GOH",
                     AirportName = "Nuuk Airport",
-                    RelatedCityName = "Nuuk"
+                    RelatedCityName = "Nuuk",
+                    CountryName = "Greenland"
 
                 }
             };
