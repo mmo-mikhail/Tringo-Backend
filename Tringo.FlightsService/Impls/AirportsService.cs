@@ -34,7 +34,7 @@ namespace Tringo.FlightsService.Impls
         public AirportDto GetAirport(string airportCode)
         {
             var results = new AirportDto();
-            var lines = File.ReadAllLines("MockFiles/airports.txt");
+            var lines = AirportsLines.Value;
             foreach (var line in lines)
             {
                 if (string.IsNullOrWhiteSpace(line))
@@ -63,6 +63,7 @@ namespace Tringo.FlightsService.Impls
             }
             return results;
         }
+
         private IEnumerable<AirportDto> GetAirports(bool priceGuaranteeOnly)
         {
             if (priceGuaranteeOnly)
@@ -77,7 +78,7 @@ namespace Tringo.FlightsService.Impls
             }
 
             var results = new List<AirportDto>();
-            var lines = File.ReadAllLines("MockFiles/airports.txt");
+            var lines = AirportsLines.Value;
             var airportsPassangers = File.ReadAllText("MockFiles/AirportsPassengers.json");
             var airportsNamesWJJson = File.ReadAllText("MockFiles/AirportNamesWJ.json");
             var countriesCsv = File.ReadAllLines("MockFiles/countriesDB.csv")
@@ -149,5 +150,7 @@ namespace Tringo.FlightsService.Impls
                 _storedOtherAirports = results;
             return results;
         }
+
+        private Lazy<string[]> AirportsLines { get => new Lazy<string[]>(() => File.ReadAllLines("MockFiles/airports.txt")); }
     }
 }
