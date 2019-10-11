@@ -32,4 +32,10 @@
     <ProjectReference Include="..\Tringo.FlightsService\Tringo.FlightsService.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="MockFiles\countriesDB.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

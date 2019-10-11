@@ -79,9 +79,14 @@ namespace Tringo.FlightsService.Impls
             var results = new List<AirportDto>();
             var lines = File.ReadAllLines("MockFiles/airports.txt");
             var airportsPassangers = File.ReadAllText("MockFiles/AirportsPassengers.json");
-            var airportsNamesWJ = File.ReadAllText("MockFiles/AirportNamesWJ.json");
+            var airportsNamesWJJson = File.ReadAllText("MockFiles/AirportNamesWJ.json");
+            var countriesCsv = File.ReadAllLines("MockFiles/countriesDB.csv")
+                .Where(line => line.Contains(","))
+                .Select(line => line.Split(','))
+                .Where(a => a.Length == 2);
+
             var airports = JsonConvert.DeserializeObject<IEnumerable<AirportsData>>(airportsPassangers).ToList();
-            var airportsNames = JsonConvert.DeserializeObject<AirportNamesWJModels>(airportsNamesWJ).AirportCityInfo;
+            var airportsNamesWJ = JsonConvert.DeserializeObject<AirportNamesWJModels>(airportsNamesWJJson).AirportCityInfo;
 
             var priceGuaranteeCodes = GetPriceGuaranteeAirportCodes();
             foreach (var line in lines)
@@ -109,7 +114,7 @@ namespace Tringo.FlightsService.Impls
                 if (string.IsNullOrWhiteSpace(iataCode))
                     continue;
 
-                var airportNameData = airportsNames.FirstOrDefault(n => n.TSAAirportCode == iataCode);
+                var airportNameData = airportsNamesWJ.FirstOrDefault(n => n.TSAAirportCode == iataCode);
                 if (airportNameData == null)
                 {
                     continue;
@@ -118,6 +123,8 @@ namespace Tringo.FlightsService.Impls
                 {
                     continue;
                 }
+
+                var country = countriesCsv.FirstOrDefault(c => c[0] == airportNameData.CountryCode)[1];
 
                 var coords = values[3].Split(',');
                 var lng = coords[0].Replace("\"", "").Trim();
@@ -128,6 +135,7 @@ namespace Tringo.FlightsService.Impls
                 {
                     AirportName = airportNameData.AirportName,
                     RelatedCityName = airportNameData.CityName,
+                    CountryName = country,
                     IataCode = iataCode,
                     Lat = double.Parse(lat),
                     Lng = double.Parse(lng),

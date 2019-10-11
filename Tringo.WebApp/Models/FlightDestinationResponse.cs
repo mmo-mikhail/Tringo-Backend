@@ -25,6 +25,8 @@ namespace Tringo.WebApp.Models
         /// </summary>
         public string CityName { get; set; }
 
+        public string CountryName { get; set; }
+
         /// <summary>
         /// Optional Airport title
         /// </summary>

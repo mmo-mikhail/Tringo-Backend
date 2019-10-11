@@ -155,6 +155,7 @@ namespace Tringo.WebApp.Controllers
                     Price = f.MinPrice * numberOfPeople,
                     DestAirportCode = destinationAirport.IataCode,
                     CityName = destinationAirport.RelatedCityName.Trim(),
+                    CountryName = destinationAirport.CountryName.Trim(),
                     AirportName = destinationAirport.AirportName?.Trim(),
                     Lat = destinationAirport.Lat,
                     Lng = destinationAirport.Lng,
