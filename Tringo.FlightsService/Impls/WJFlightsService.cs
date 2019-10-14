@@ -41,7 +41,24 @@ namespace Tringo.FlightsService.Impls
                 DestinationAirportCodes = priceGuaranteeCodes
             };
             var priceGuaranteeDestinations = await PerformGetFlights(newRequest);
-            return priceGuaranteeDestinations
+
+			var noPriceDestinations = newRequest.DestinationAirportCodes
+				.Except(priceGuaranteeDestinations.Select(f => f.DestinationAirportCode));
+
+			// Add destinations without prices
+			priceGuaranteeDestinations = priceGuaranteeDestinations.Concat(
+				noPriceDestinations.Select(destCode => new ReturnFlightDestinationDto
+			{
+				From = newRequest.DepartureAirportCode,
+				DestinationAirportCode = destCode,
+				MinPrice = -1
+			})).ToList();
+
+			// Exclude same from-to destinations just in case
+			priceGuaranteeDestinations = priceGuaranteeDestinations
+				.Where(f => f.From != f.DestinationAirportCode).ToList();
+
+			return priceGuaranteeDestinations
                 .Select(f => { f.From = from; return f; }) // API doesn't return from
                 .ToList();
         }
