@@ -41,12 +41,12 @@ namespace Tringo.WebApp.Controllers
         public async Task<ActionResult<IEnumerable<FlightDestinationResponse>>> GetAllLowestPrices(
             [FromBody]BaseFlightDestinationRequest inputData)
         {
-            var departYear = inputData.Dates.MonthIdx != -1 
-                ? inputData.Dates.MonthIdx < DateTime.Now.Month
+			var departMonth = inputData.Dates.MonthIdx != -1 ? inputData.Dates.MonthIdx + 1 : (int?)null;
+			var departYear = inputData.Dates.MonthIdx != -1 
+                ? departMonth < DateTime.Now.Month
                     ? DateTime.Now.Year + 1
                     : DateTime.Now.Year
                 : (int?)null;
-            var departMonth = inputData.Dates.MonthIdx != -1 ? inputData.Dates.MonthIdx + 1 : (int?)null;
 
             var allAirports = _airportsService.GetPriceGuaranteeAirports().ToList();
             var allFlights = (await _flightsService.GetAllFlights(inputData.DepartureAirportId, departYear, departMonth)).ToList();
